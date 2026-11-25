@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encontro 01 — Introdução às Redes</title>
+<style>
+:root{
+  --bg:#f7f5f0; --paper:#ffffff; --ink:#1d2330; --muted:#5d6676;
+  --line:#e3dfd6; --accent:#0f6e8c; --accent-soft:#e3f1f5;
+  --warm:#b45f1e; --warm-soft:#fbefe4; --code-bg:#f3f1ec;
+  --side:#fbfaf7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+    --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+    --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+  --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+  --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:16px}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.65 "Source Serif 4","Iowan Old Style",Georgia,serif;}
+.layout{display:grid; grid-template-columns:290px minmax(0,1fr); min-height:100vh}
+aside{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--side);
+  border-right:1px solid var(--line); padding:28px 20px 40px;
+  font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+aside .brand{font-weight:700; letter-spacing:.04em; font-size:12px; color:var(--accent);
+  text-transform:uppercase; margin-bottom:4px}
+aside .brand-sub{color:var(--muted); font-size:13px; margin-bottom:20px}
+aside ul{list-style:none; margin:0; padding:0}
+aside ul ul{padding-left:12px; display:none}
+aside li a{display:block; padding:4px 8px; border-radius:6px; color:var(--ink);
+  text-decoration:none}
+aside li a:hover{background:var(--accent-soft)}
+aside li a.active{background:var(--accent-soft); color:var(--accent); font-weight:600}
+main{padding:48px 24px 96px}
+article{max-width:780px; margin:0 auto}
+header.hero{max-width:780px; margin:0 auto 36px; padding-bottom:28px; border-bottom:2px solid var(--ink)}
+.hero .code{font:600 13px/1 system-ui,sans-serif; letter-spacing:.08em; color:var(--accent);
+  text-transform:uppercase}
+.hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.15; margin:12px 0 10px; font-weight:700}
+.hero .meta{font:14px system-ui,sans-serif; color:var(--muted)}
+.hero .meta b{color:var(--ink)}
+h1,h2,h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.25}
+article h1{font-size:26px; margin:64px 0 16px; padding-top:8px}
+article h2{font-size:20px; margin:40px 0 12px; color:var(--accent)}
+article h3{font-size:17px; margin:28px 0 8px}
+article h1.parte{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--warm);
+  margin:72px 0 -36px; padding:0; border-top:2px solid var(--warm); padding-top:10px}
+aside li.parte-item > a{margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--warm); font-weight:700}
+aside li.parte-item > a:hover{background:transparent}
+ul.task-list{list-style:none;padding-left:6px}
+ul.task-list input{margin-right:8px}
+hr{display:none}
+a{color:var(--accent)}
+strong{font-weight:650}
+blockquote{margin:24px 0; padding:14px 18px; background:var(--warm-soft);
+  border-left:4px solid var(--warm); border-radius:0 8px 8px 0}
+blockquote p{margin:.3em 0}
+pre{background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:16px 18px; overflow-x:auto; font:13.5px/1.4 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.9em}
+p code,li code{background:var(--code-bg); padding:1px 5px; border-radius:4px}
+.table-wrap{overflow-x:auto; margin:20px 0}
+table{border-collapse:collapse; width:100%; font:14.5px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+th,td{padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+thead th{background:var(--accent-soft); color:var(--ink); font-weight:650; border-bottom:2px solid var(--accent)}
+tbody tr:hover{background:var(--accent-soft)}
+li{margin:4px 0}
+math[display="block"]{margin:18px 0; font-size:1.15em; overflow-x:auto}
+.menu-btn{display:none}
+@media (max-width:900px){
+  .layout{display:block}
+  aside{position:fixed; inset:0 auto 0 0; width:82%; max-width:320px; z-index:20;
+    transform:translateX(-100%); transition:transform .2s; box-shadow:0 0 30px rgba(0,0,0,.25)}
+  aside.open{transform:none}
+  .menu-btn{display:block; position:fixed; right:16px; bottom:16px; z-index:30;
+    background:var(--accent); color:#fff; border:0; border-radius:999px; padding:12px 18px;
+    font:600 14px system-ui,sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.2)}
+  main{padding:28px 16px 80px}
+}
+@media print{
+  aside,.menu-btn{display:none}
+  .layout{display:block}
+  body{background:#fff; font-size:12pt}
+  pre,table,blockquote{break-inside:avoid}
+  article h1{break-before:page; margin-top:0}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside id="toc">
+  <div class="brand">INRC230002</div>
+  <div class="brand-sub">Redes de Computadores: Acesso à Rede</div>
+  <ul>
+  <li><a href="#apresentação" id="toc-apresentação">1.
+  Apresentação</a></li>
+  <li><a href="#parte-i-o-que-é-uma-rede"
+  id="toc-parte-i-o-que-é-uma-rede">Parte I — O que é uma rede</a></li>
+  <li><a href="#rede-de-computadores" id="toc-rede-de-computadores">2.
+  Rede de computadores</a></li>
+  <li><a href="#para-que-servem-as-redes"
+  id="toc-para-que-servem-as-redes">3. Para que servem as
+  redes?</a></li>
+  <li><a href="#classificação-por-alcance"
+  id="toc-classificação-por-alcance">4. Classificação por
+  alcance</a></li>
+  <li><a href="#a-internet-uma-rede-de-redes"
+  id="toc-a-internet-uma-rede-de-redes">5. A Internet: uma rede de
+  redes</a></li>
+  <li><a href="#topologias" id="toc-topologias">6. Topologias</a></li>
+  <li><a href="#comutação-de-circuitos-comutação-de-pacotes"
+  id="toc-comutação-de-circuitos-comutação-de-pacotes">7. Comutação de
+  circuitos × comutação de pacotes</a></li>
+  <li><a href="#parte-ii-camadas-e-protocolos"
+  id="toc-parte-ii-camadas-e-protocolos">Parte II — Camadas e
+  protocolos</a></li>
+  <li><a href="#por-que-dividir-em-camadas"
+  id="toc-por-que-dividir-em-camadas">8. Por que dividir em
+  camadas?</a></li>
+  <li><a href="#o-modelo-osi" id="toc-o-modelo-osi">9. O modelo
+  OSI</a></li>
+  <li><a href="#o-modelo-tcpip-e-o-modelo-híbrido"
+  id="toc-o-modelo-tcpip-e-o-modelo-híbrido">10. O modelo TCP/IP e o
+  modelo híbrido</a></li>
+  <li><a href="#encapsulamento" id="toc-encapsulamento">11.
+  Encapsulamento</a></li>
+  <li><a href="#parte-iii-observando-a-rede"
+  id="toc-parte-iii-observando-a-rede">Parte III — Observando a
+  rede</a></li>
+  <li><a href="#a-linha-de-comando" id="toc-a-linha-de-comando">12. A
+  linha de comando</a></li>
+  <li><a href="#wireshark-vendo-o-encapsulamento"
+  id="toc-wireshark-vendo-o-encapsulamento">13. Wireshark: vendo o
+  encapsulamento</a></li>
+  <li><a href="#parte-iv-prática" id="toc-parte-iv-prática">Parte IV —
+  Prática</a></li>
+  <li><a href="#roteiro-observando-a-rede-de-verdade"
+  id="toc-roteiro-observando-a-rede-de-verdade">14. Roteiro: observando
+  a rede de verdade</a></li>
+  <li><a href="#parte-v-exercícios-de-fixação"
+  id="toc-parte-v-exercícios-de-fixação">Parte V — Exercícios de
+  fixação</a></li>
+  <li><a href="#questões-conceituais" id="toc-questões-conceituais">15.
+  Questões conceituais</a></li>
+  <li><a href="#exercícios-de-aplicação"
+  id="toc-exercícios-de-aplicação">16. Exercícios de aplicação</a></li>
+  <li><a href="#gabarito-orientativo" id="toc-gabarito-orientativo">17.
+  Gabarito orientativo</a></li>
+  <li><a href="#parte-vi-síntese-e-planejamento"
+  id="toc-parte-vi-síntese-e-planejamento">Parte VI — Síntese</a></li>
+  <li><a href="#síntese" id="toc-síntese">18. Síntese</a></li>
+  <li><a href="#para-o-próximo-encontro"
+  id="toc-para-o-próximo-encontro">19. Para o próximo encontro</a></li>
+  <li><a href="#referências" id="toc-referências">20.
+  Referências</a></li>
+  </ul>
+</aside>
+<main>
+  <header class="hero">
+    <div class="code">INRC230002 · Encontro 01</div>
+    <h1>Introdução às Redes, Modelos em Camadas e Encapsulamento</h1>
+    <div class="meta"><strong>Duração:</strong> 1h30<br><strong>Ferramentas:</strong> linha de comando (<code>ping</code>,
+<code>tracert</code>/<code>traceroute</code>, <code>nslookup</code>,
+<code>ipconfig</code>) e Wireshark<br><strong>Referência principal:</strong> TANENBAUM, Andrew S.;
+WETHERALL, David J. <em>Computer Networks</em>. 5. ed. Prentice Hall,
+2011. Capítulo 1 (<em>Introduction</em>): usos das redes, hardware de
+rede, software de rede, modelos de referência.</div>
+  </header>
+  <article>
+<h1 id="apresentação">1. Apresentação</h1>
+<p>Abra o navegador e digite o endereço de um site. Em menos de um
+segundo, a página aparece. Nesse intervalo, o seu computador descobriu o
+endereço do servidor, enviou dezenas de mensagens que atravessaram
+cabos, rádio, fibras ópticas e vários equipamentos de diferentes
+empresas, e recebeu de volta as respostas, na ordem certa e sem
+erros.</p>
+<p>Ninguém projetou esse caminho inteiro de uma vez. Ele funciona porque
+o problema foi <strong>dividido em partes menores</strong>, cada uma
+resolvida por uma <strong>camada</strong>, e porque todos os
+equipamentos seguem as mesmas <strong>regras</strong> (protocolos).</p>
+<blockquote>
+<p><strong>Pergunta de abertura:</strong> quando você digita
+<code>ping www.exemplo.com.br</code>, o que precisa acontecer para que
+uma resposta volte?</p>
+</blockquote>
+<p><strong>Questão norteadora:</strong> o que é uma rede de
+computadores, como ela se organiza e por que dividimos a comunicação em
+camadas?</p>
+<h2 id="objetivos-de-aprendizagem">Objetivos de aprendizagem</h2>
+<p>Ao final deste encontro, você deverá ser capaz de:</p>
+<ol type="1">
+<li>definir rede de computadores e identificar seus componentes (hosts,
+enlaces, equipamentos de interconexão);</li>
+<li>classificar redes por alcance (PAN, LAN, MAN, WAN) e reconhecer a
+Internet como uma “rede de redes”;</li>
+<li>diferenciar topologia física e topologia lógica;</li>
+<li>diferenciar comutação de circuitos e comutação de pacotes;</li>
+<li>definir protocolo e explicar por que as redes são organizadas em
+camadas;</li>
+<li>comparar os modelos OSI e TCP/IP e o modelo híbrido de cinco camadas
+usado nesta disciplina;</li>
+<li>explicar o encapsulamento e nomear a unidade de dados de cada
+camada;</li>
+<li>usar <code>ping</code>,
+<code>tracert</code>/<code>traceroute</code>, <code>nslookup</code> e
+<code>ipconfig</code> para observar a rede;</li>
+<li>identificar, em uma captura do Wireshark, os cabeçalhos Ethernet, IP
+e ICMP de um <code>ping</code>.</li>
+</ol>
+<hr />
+<h1 class="parte" id="parte-i-o-que-é-uma-rede">Parte I — O que é uma
+rede</h1>
+<h1 id="rede-de-computadores">2. Rede de computadores</h1>
+<p>Uma <strong>rede de computadores</strong> é um conjunto de
+dispositivos autônomos interligados que trocam informações. “Autônomos”
+significa que cada um tem seu próprio processamento: a rede não é um
+computador central com terminais, mas um conjunto de iguais que
+cooperam.</p>
+<p>Toda rede tem três tipos de elementos:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Elemento</th>
+<th>O que é</th>
+<th>Exemplos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Hosts</strong> (sistemas finais)</td>
+<td>Onde as aplicações rodam; origem e destino das mensagens</td>
+<td>Computadores, celulares, servidores, impressoras, câmeras</td>
+</tr>
+<tr class="even">
+<td><strong>Enlaces</strong> (meios de comunicação)</td>
+<td>Por onde os sinais passam</td>
+<td>Cabo de par trançado, fibra óptica, rádio (Wi-Fi, 4G/5G)</td>
+</tr>
+<tr class="odd">
+<td><strong>Equipamentos de interconexão</strong></td>
+<td>Recebem e repassam as mensagens</td>
+<td>Switches, roteadores, access points</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>  Celular ))) AP ──┐
+                   │
+  Notebook ─────── SWITCH ─── ROTEADOR ═══ fibra ═══ PROVEDOR ═══ ... ═══ SERVIDOR
+                   │
+  Impressora ──────┘
+
+  hosts             equipamentos             enlaces                      host</code></pre>
+<p>E toda comunicação depende de <strong>protocolos</strong>: conjuntos
+de regras que definem o <strong>formato</strong> das mensagens, a
+<strong>ordem</strong> em que são trocadas e as <strong>ações</strong>
+tomadas ao enviar ou receber cada uma. Assim como duas pessoas precisam
+falar a mesma língua e respeitar a vez de cada um, dois computadores
+precisam seguir o mesmo protocolo.</p>
+<h1 id="para-que-servem-as-redes">3. Para que servem as redes?</h1>
+<ul>
+<li><strong>Compartilhar recursos:</strong> impressoras, arquivos,
+acesso à Internet.</li>
+<li><strong>Comunicar pessoas:</strong> mensagens, e-mail, voz e
+vídeo.</li>
+<li><strong>Acessar informação e serviços:</strong> sites, sistemas
+acadêmicos, bancos, serviços públicos.</li>
+<li><strong>Distribuir processamento:</strong> aplicações em nuvem,
+sistemas de empresas com várias filiais.</li>
+<li><strong>Conectar objetos:</strong> sensores, câmeras,
+eletrodomésticos (IoT).</li>
+</ul>
+<p>O modelo mais comum é o <strong>cliente-servidor</strong>: o
+<strong>cliente</strong> (o navegador, o aplicativo do celular) faz
+pedidos; o <strong>servidor</strong> (o site, o sistema acadêmico)
+responde. No modelo <strong>par a par</strong> (<em>peer-to-peer</em>,
+P2P), os dispositivos são ao mesmo tempo clientes e servidores uns dos
+outros, como em aplicações de compartilhamento de arquivos.</p>
+<h1 id="classificação-por-alcance">4. Classificação por alcance</h1>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tipo</th>
+<th>Alcance típico</th>
+<th>Exemplo</th>
+<th>Tecnologias comuns</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>PAN</strong> (<em>Personal Area Network</em>)</td>
+<td>Alguns metros</td>
+<td>Fone e relógio ligados ao celular</td>
+<td>Bluetooth</td>
+</tr>
+<tr class="even">
+<td><strong>LAN</strong> (<em>Local Area Network</em>)</td>
+<td>Uma casa, um prédio, um campus</td>
+<td>Rede do laboratório</td>
+<td><strong>Ethernet</strong>, <strong>Wi-Fi</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>MAN</strong> (<em>Metropolitan Area Network</em>)</td>
+<td>Uma cidade</td>
+<td>Rede de um provedor regional; TV a cabo</td>
+<td>Fibra, enlaces de rádio</td>
+</tr>
+<tr class="even">
+<td><strong>WAN</strong> (<em>Wide Area Network</em>)</td>
+<td>Um país, um continente</td>
+<td>Rede que liga as filiais de um banco</td>
+<td>Fibra de longa distância, enlaces de operadoras</td>
+</tr>
+</tbody>
+</table>
+<p>Esta disciplina, <strong>Acesso à Rede</strong>, trata principalmente
+das <strong>LANs</strong>: como os dispositivos se ligam fisicamente
+(camada física) e como trocam dados dentro da rede local (camada de
+enlace).</p>
+<h1 id="a-internet-uma-rede-de-redes">5. A Internet: uma rede de
+redes</h1>
+<p>A <strong>Internet</strong> não é uma rede única. É a interligação de
+<strong>milhares de redes independentes</strong>: a rede da sua casa, a
+do provedor, a da universidade, a de grandes empresas de conteúdo, as
+das operadoras que ligam continentes.</p>
+<pre class="text"><code>  REDE DA SUA CASA ── PROVEDOR LOCAL ── PROVEDOR REGIONAL ── OPERADORA ═══ cabo submarino ═══ ...
+                                                │
+  REDE DA UNIVERSIDADE ── PROVEDOR ─────────────┘</code></pre>
+<p>O que mantém tudo isso funcionando são <strong>padrões
+abertos</strong>, definidos por organizações como:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Organização</th>
+<th>O que padroniza</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>IEEE</strong></td>
+<td>Redes locais: Ethernet (802.3), Wi-Fi (802.11), VLANs (802.1Q)</td>
+</tr>
+<tr class="even">
+<td><strong>IETF</strong></td>
+<td>Protocolos da Internet (IP, TCP, DNS…), publicados em documentos
+chamados <strong>RFCs</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>ITU</strong></td>
+<td>Telecomunicações (telefonia, enlaces de longa distância)</td>
+</tr>
+<tr class="even">
+<td><strong>ISO</strong></td>
+<td>Normas em geral, incluindo o modelo de referência OSI</td>
+</tr>
+</tbody>
+</table>
+<h1 id="topologias">6. Topologias</h1>
+<p>A <strong>topologia</strong> é a forma como os elementos da rede
+estão ligados.</p>
+<pre class="text"><code> BARRAMENTO              ESTRELA                 ANEL                   MALHA
+
+ A    B    C               A   B                 A ─── B                 A ─── B
+ │    │    │                ╲ ╱                  │     │                 │ ╲ ╱ │
+═╧════╧════╧═            ── ● ──                 D ─── C                 │  ╳  │
+                            ╱ ╲                                          │ ╱ ╲ │
+                           C   D                                         D ─── C</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Topologia</th>
+<th>Vantagem</th>
+<th>Desvantagem</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Barramento</td>
+<td>Pouco cabo</td>
+<td>Uma falha no cabo derruba todos; meio compartilhado</td>
+</tr>
+<tr class="even">
+<td>Estrela</td>
+<td>Fácil de instalar e diagnosticar; uma falha afeta só um host</td>
+<td>Depende do equipamento central</td>
+</tr>
+<tr class="odd">
+<td>Anel</td>
+<td>Ordem de transmissão bem definida</td>
+<td>Uma falha pode interromper o anel</td>
+</tr>
+<tr class="even">
+<td>Malha</td>
+<td>Vários caminhos: tolera falhas</td>
+<td>Muito cabo e muitas portas</td>
+</tr>
+</tbody>
+</table>
+<p>Hoje, as LANs cabeadas são quase sempre em <strong>estrela</strong>
+(todos ligados a um switch), e as redes de provedores e operadoras são
+em <strong>malha parcial</strong>, com caminhos redundantes.</p>
+<p><strong>Topologia física × lógica:</strong> a topologia
+<strong>física</strong> descreve os cabos; a <strong>lógica</strong>,
+como os dados de fato circulam. As duas podem ser diferentes. Guarde
+esta ideia: nos Encontros 04 e 05, veremos um equipamento (o
+<em>hub</em>) que tem forma de estrela, mas se comporta como um
+barramento.</p>
+<h1 id="comutação-de-circuitos-comutação-de-pacotes">7. Comutação de
+circuitos × comutação de pacotes</h1>
+<p>Como os dados atravessam uma rede compartilhada por muita gente?</p>
+<p><strong>Comutação de circuitos</strong> (telefonia tradicional):
+antes de conversar, estabelece-se um <strong>caminho dedicado</strong>
+entre as duas pontas, que fica reservado durante toda a ligação, mesmo
+nos momentos de silêncio.</p>
+<p><strong>Comutação de pacotes</strong> (Internet): a mensagem é
+dividida em <strong>pacotes</strong>, e cada pacote viaja de forma
+independente, compartilhando os enlaces com pacotes de outros usuários.
+Os equipamentos recebem cada pacote, guardam-no por um instante e o
+repassam (<em>store-and-forward</em>).</p>
+<pre class="text"><code>COMUTAÇÃO DE CIRCUITOS                 COMUTAÇÃO DE PACOTES
+
+A ════════════════════════ B            A ─[1]─[2]─[3]──►  ┐
+  caminho reservado do início           C ─[x]─[y]──────►  ├─ compartilham os enlaces
+  ao fim, mesmo sem dados               E ─[p]──────────►  ┘</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Circuitos</th>
+<th>Pacotes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Recursos</td>
+<td>Reservados para cada conversa</td>
+<td>Compartilhados por todos</td>
+</tr>
+<tr class="even">
+<td>Aproveitamento</td>
+<td>Desperdício nos silêncios</td>
+<td>Alto, ideal para tráfego em rajadas</td>
+</tr>
+<tr class="odd">
+<td>Atraso</td>
+<td>Previsível</td>
+<td>Variável (filas nos equipamentos)</td>
+</tr>
+<tr class="even">
+<td>Exemplo</td>
+<td>Telefonia fixa tradicional</td>
+<td>Internet</td>
+</tr>
+</tbody>
+</table>
+<p>Os computadores trocam dados <strong>em rajadas</strong>: muito
+tráfego por alguns segundos, depois nada. Por isso, a comutação de
+pacotes, que só usa o enlace quando há algo a enviar, venceu.</p>
+<hr />
+<h1 class="parte" id="parte-ii-camadas-e-protocolos">Parte II — Camadas
+e protocolos</h1>
+<h1 id="por-que-dividir-em-camadas">8. Por que dividir em camadas?</h1>
+<p>Enviar uma mensagem de um computador em São Paulo para um servidor em
+outro continente envolve problemas muito diferentes:</p>
+<ul>
+<li>transformar bits em sinais elétricos, luminosos ou de rádio;</li>
+<li>organizar os bits em blocos e detectar erros;</li>
+<li>saber <strong>para quem</strong>, na rede local, entregar cada
+bloco;</li>
+<li>escolher o <strong>caminho</strong> entre milhares de redes;</li>
+<li>garantir que nada se perca e que tudo chegue na ordem;</li>
+<li>entender o que a aplicação está pedindo (uma página, um e-mail, um
+vídeo).</li>
+</ul>
+<p>Resolver tudo isso em um único programa seria impossível de manter. A
+solução é dividir o problema em <strong>camadas</strong>, empilhadas, em
+que:</p>
+<ul>
+<li>cada camada resolve <strong>um</strong> grupo de problemas;</li>
+<li>cada camada <strong>usa os serviços</strong> da camada de baixo e
+<strong>oferece serviços</strong> à camada de cima;</li>
+<li>cada camada conversa com a <strong>camada equivalente</strong> do
+outro lado, usando um <strong>protocolo</strong> próprio;</li>
+<li>uma camada pode ser <strong>trocada</strong> sem afetar as outras (o
+navegador funciona igual por cabo ou por Wi-Fi).</li>
+</ul>
+<p><strong>Analogia — o correio:</strong> quem escreve a carta não sabe
+como ela será transportada; o carteiro não lê o conteúdo; o caminhão não
+sabe o endereço de cada carta, só a cidade de destino. Cada etapa faz
+sua parte, confiando nas outras.</p>
+<h1 id="o-modelo-osi">9. O modelo OSI</h1>
+<p>O <strong>modelo de referência OSI</strong> (<em>Open Systems
+Interconnection</em>), da ISO, divide a comunicação em <strong>sete
+camadas</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Camada</th>
+<th>Responsabilidade</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>7</td>
+<td><strong>Aplicação</strong></td>
+<td>Serviços para o usuário: web, e-mail, transferência de arquivos</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Apresentação</td>
+<td>Representação dos dados: codificação, compressão, criptografia</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Sessão</td>
+<td>Controle do diálogo entre as aplicações</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><strong>Transporte</strong></td>
+<td>Comunicação fim a fim entre processos; confiabilidade e ordem</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><strong>Rede</strong></td>
+<td>Endereçamento lógico e escolha do caminho entre redes</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><strong>Enlace</strong></td>
+<td>Quadros, endereçamento local, detecção de erros, acesso ao meio</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td><strong>Física</strong></td>
+<td>Transmissão dos bits como sinais no meio</td>
+</tr>
+</tbody>
+</table>
+<p>Os protocolos OSI nunca se popularizaram, mas o
+<strong>modelo</strong> ficou como referência: quando se fala em “switch
+de camada 2” ou “problema de camada 1”, é a numeração do OSI que se
+usa.</p>
+<h1 id="o-modelo-tcpip-e-o-modelo-híbrido">10. O modelo TCP/IP e o
+modelo híbrido</h1>
+<p>O modelo que de fato roda na Internet é o <strong>TCP/IP</strong>,
+com quatro camadas. Tanenbaum adota um <strong>modelo híbrido de cinco
+camadas</strong>, que separa o que o TCP/IP junta na camada mais baixa.
+É esse o modelo que usaremos:</p>
+<pre class="text"><code>        OSI                    HÍBRIDO (esta disciplina)         TCP/IP
+┌──────────────────┐         ┌──────────────────────────┐   ┌──────────────────┐
+│ 7 Aplicação      │         │                          │   │                  │
+│ 6 Apresentação   │ ──────► │ 5 Aplicação              │   │ Aplicação        │
+│ 5 Sessão         │         │                          │   │                  │
+├──────────────────┤         ├──────────────────────────┤   ├──────────────────┤
+│ 4 Transporte     │ ──────► │ 4 Transporte             │   │ Transporte       │
+├──────────────────┤         ├──────────────────────────┤   ├──────────────────┤
+│ 3 Rede           │ ──────► │ 3 Rede                   │   │ Internet         │
+├──────────────────┤         ├──────────────────────────┤   ├──────────────────┤
+│ 2 Enlace         │ ──────► │ 2 Enlace                 │   │ Enlace           │
+│ 1 Física         │ ──────► │ 1 Física                 │   │ (acesso à rede)  │
+└──────────────────┘         └──────────────────────────┘   └──────────────────┘</code></pre>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Camada</th>
+<th>Protocolos e tecnologias típicos</th>
+<th>Equipamento que atua até ela</th>
+<th>Endereço</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>5 Aplicação</td>
+<td>HTTP, DNS, SMTP</td>
+<td>—</td>
+<td>Nomes (<code>www.exemplo.com.br</code>)</td>
+</tr>
+<tr class="even">
+<td>4 Transporte</td>
+<td>TCP, UDP</td>
+<td>—</td>
+<td>Portas (80, 443, 53)</td>
+</tr>
+<tr class="odd">
+<td>3 Rede</td>
+<td>IP, ICMP</td>
+<td><strong>Roteador</strong></td>
+<td>Endereço IP</td>
+</tr>
+<tr class="even">
+<td>2 Enlace</td>
+<td>Ethernet, Wi-Fi</td>
+<td><strong>Switch</strong>, access point</td>
+<td>Endereço MAC</td>
+</tr>
+<tr class="odd">
+<td>1 Física</td>
+<td>Cabos, fibras, rádio</td>
+<td>Hub, repetidor</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O foco desta disciplina</strong> são as camadas <strong>1
+(física)</strong> e <strong>2 (enlace)</strong>, ou seja, o
+<strong>acesso à rede</strong>. As camadas de cima aparecem como
+contexto e serão aprofundadas em outras disciplinas (o endereçamento IP,
+por exemplo, em INRC230003).</p>
+<h1 id="encapsulamento">11. Encapsulamento</h1>
+<p>Quando uma aplicação envia dados, eles descem pelas camadas, e
+<strong>cada camada acrescenta seu próprio cabeçalho</strong> (e, às
+vezes, um trailer) com as informações de que precisa. É o
+<strong>encapsulamento</strong>:</p>
+<pre class="text"><code>TRANSMISSOR                                                      RECEPTOR
+
+Aplicação                    [ DADOS ]                           ▲ Aplicação
+    │                                                            │
+Transporte            [ TCP │ DADOS ]          segmento          │ Transporte
+    │                                                            │
+Rede             [ IP │ TCP │ DADOS ]          pacote            │ Rede
+    │                                                            │
+Enlace    [ ETH │ IP │ TCP │ DADOS │ FCS ]     quadro            │ Enlace
+    │                                                            │
+Física    10110100101011101000101011101...     bits / sinais ────┘ Física</code></pre>
+<p>No receptor, o caminho é o inverso
+(<strong>desencapsulamento</strong>): cada camada lê e retira o seu
+cabeçalho e entrega o restante à camada de cima. A camada de enlace do
+receptor só lê o cabeçalho de enlace; a de rede só lê o cabeçalho IP; e
+assim por diante. <strong>Cada camada conversa com a camada equivalente
+do outro lado.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>Camada</th>
+<th>Nome da unidade de dados (PDU)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Aplicação</td>
+<td>Mensagem (dados)</td>
+</tr>
+<tr class="even">
+<td>Transporte</td>
+<td><strong>Segmento</strong> (TCP) ou datagrama (UDP)</td>
+</tr>
+<tr class="odd">
+<td>Rede</td>
+<td><strong>Pacote</strong></td>
+</tr>
+<tr class="even">
+<td>Enlace</td>
+<td><strong>Quadro</strong> (<em>frame</em>)</td>
+</tr>
+<tr class="odd">
+<td>Física</td>
+<td><strong>Bits</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="e-nos-equipamentos-do-meio-do-caminho">11.1 E nos equipamentos
+do meio do caminho?</h2>
+<p>Os equipamentos intermediários só “abrem” as camadas de que
+precisam:</p>
+<pre class="text"><code>  PC A                    SWITCH              ROTEADOR                PC B
+┌──────────┐                                                       ┌──────────┐
+│Aplicação │                                                       │Aplicação │
+│Transporte│                                                       │Transporte│
+│Rede      │                            ┌──────────┐               │Rede      │
+│Enlace    │        ┌──────────┐        │Rede      │               │Enlace    │
+│Física    │        │Enlace    │        │Enlace    │               │Física    │
+└────┬─────┘        │Física    │        │Física    │               └────┬─────┘
+     └──────────────┴──────────┴────────┴──────────┴────────────────────┘</code></pre>
+<p>O switch lê até a camada 2 (o endereço MAC); o roteador, até a camada
+3 (o endereço IP). Só os hosts nas pontas passam por todas as camadas.
+Esse desenho vai nos acompanhar a disciplina inteira, e mais adiante
+vamos segui-lo passo a passo.</p>
+<hr />
+<h1 class="parte" id="parte-iii-observando-a-rede">Parte III —
+Observando a rede</h1>
+<h1 id="a-linha-de-comando">12. A linha de comando</h1>
+<p>Quatro comandos permitem observar a rede sem instalar nada:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Comando</th>
+<th>Windows</th>
+<th>Linux / macOS</th>
+<th>O que mostra</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Configuração local</td>
+<td><code>ipconfig</code> (ou <code>ipconfig /all</code>)</td>
+<td><code>ip addr</code> / <code>ifconfig</code></td>
+<td>Endereço IP, máscara, gateway, endereço MAC</td>
+</tr>
+<tr class="even">
+<td>Teste de alcance</td>
+<td><code>ping destino</code></td>
+<td><code>ping -c 4 destino</code></td>
+<td>Se o destino responde e em quanto tempo</td>
+</tr>
+<tr class="odd">
+<td>Caminho</td>
+<td><code>tracert destino</code></td>
+<td><code>traceroute destino</code></td>
+<td>Os roteadores entre você e o destino</td>
+</tr>
+<tr class="even">
+<td>Nomes</td>
+<td><code>nslookup nome</code></td>
+<td><code>nslookup nome</code></td>
+<td>O endereço IP associado a um nome</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ping">12.1 <code>ping</code></h2>
+<p>O <code>ping</code> envia uma mensagem <strong>ICMP Echo
+Request</strong> e espera um <strong>Echo Reply</strong>:</p>
+<pre class="text"><code>C:\&gt; ping www.exemplo.com.br
+
+Disparando www.exemplo.com.br [203.0.113.10] com 32 bytes de dados:
+Resposta de 203.0.113.10: bytes=32 tempo=14ms TTL=117
+Resposta de 203.0.113.10: bytes=32 tempo=13ms TTL=117
+...
+Pacotes: Enviados = 4, Recebidos = 4, Perdidos = 0 (0% de perda)</code></pre>
+<p><em>(Saída ilustrativa; o endereço <code>203.0.113.10</code> é
+reservado para documentação.)</em></p>
+<ul>
+<li><strong>tempo</strong> é o <strong>RTT</strong> (<em>Round-Trip
+Time</em>): o tempo de ida e volta da mensagem.</li>
+<li><strong>TTL</strong> (<em>Time To Live</em>) é um contador no
+cabeçalho IP que cada roteador diminui em 1. O sistema que responde
+costuma começar com 64 (Linux) ou 128 (Windows); um TTL de 117 sugere
+uma resposta que começou em 128 e passou por cerca de 11
+roteadores.</li>
+<li><strong>Perdidos</strong> indica pacotes sem resposta.</li>
+</ul>
+<p><strong>Atenção:</strong> um <code>ping</code> sem resposta
+<strong>não prova</strong> que o destino está desligado. Muitos
+servidores e firewalls bloqueiam o ICMP de propósito.</p>
+<h2 id="tracert-traceroute">12.2 <code>tracert</code> /
+<code>traceroute</code></h2>
+<p>O <code>tracert</code> mostra <strong>cada roteador</strong> do
+caminho, com o RTT até ele:</p>
+<pre class="text"><code>C:\&gt; tracert www.exemplo.com.br
+  1     1 ms    1 ms    1 ms  192.168.0.1          ← o seu roteador (gateway)
+  2     8 ms    7 ms    8 ms  10.20.0.1            ← o provedor
+  3    12 ms   11 ms   12 ms  198.51.100.5
+  ...
+  9    14 ms   13 ms   14 ms  203.0.113.10         ← o destino</code></pre>
+<p>Ele usa justamente o TTL: envia mensagens com TTL = 1, 2, 3…, e cada
+roteador que zera o TTL descarta a mensagem e avisa a origem. Linhas com
+<code>*</code> são roteadores que não respondem a esses avisos. Como o
+roteamento funciona é assunto da camada de rede; aqui, basta ver que
+<strong>a Internet é uma sequência de saltos</strong>.</p>
+<h2 id="nslookup">12.3 <code>nslookup</code></h2>
+<p>As pessoas usam <strong>nomes</strong>; a rede usa <strong>endereços
+IP</strong>. O <strong>DNS</strong> (<em>Domain Name System</em>) faz a
+tradução:</p>
+<pre class="text"><code>C:\&gt; nslookup www.exemplo.com.br
+Servidor:  dns.provedor.net.br
+Address:  192.168.0.1
+
+Resposta não autoritativa:
+Nome:    www.exemplo.com.br
+Address:  203.0.113.10</code></pre>
+<p>Antes de qualquer <code>ping</code> ou acesso a um site pelo nome, o
+computador faz uma consulta DNS. Ou seja, até um simples
+<code>ping www.exemplo.com.br</code> envolve <strong>dois</strong>
+protocolos de aplicação/controle diferentes: DNS e ICMP.</p>
+<h1 id="wireshark-vendo-o-encapsulamento">13. Wireshark: vendo o
+encapsulamento</h1>
+<p>O <strong>Wireshark</strong> captura os quadros que passam pela placa
+de rede e mostra, camada por camada, o conteúdo de cada um. Ao capturar
+um <code>ping</code>, a tela de detalhes mostra algo como:</p>
+<pre class="text"><code>▶ Frame 5: 74 bytes on wire                         ← informações da captura
+▶ Ethernet II, Src: 02:1a:2b:3c:4d:5e, Dst: 02:aa:bb:cc:dd:01   ← camada 2
+▶ Internet Protocol Version 4, Src: 192.168.0.10, Dst: 203.0.113.10  ← camada 3
+▶ Internet Control Message Protocol                 ← ICMP (Echo request)
+    Type: 8 (Echo (ping) request)
+    Data (32 bytes)</code></pre>
+<p>Cada linha com ▶ é um <strong>cabeçalho</strong>, de uma camada.
+Clicando em cada uma, o Wireshark destaca os bytes correspondentes no
+painel inferior: o encapsulamento deixa de ser um desenho e passa a ser
+<strong>bytes reais</strong>.</p>
+<p><strong>Conta dos 74 bytes</strong> (ping do Windows, que envia 32
+bytes de dados):</p>
+<table>
+<thead>
+<tr class="header">
+<th>Parte</th>
+<th style="text-align: right;">Bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cabeçalho Ethernet</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr class="even">
+<td>Cabeçalho IPv4</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td>Cabeçalho ICMP</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td>Dados do ping</td>
+<td style="text-align: right;">32</td>
+</tr>
+<tr class="odd">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>74</strong></td>
+</tr>
+</tbody>
+</table>
+<p>(O Linux envia 56 bytes de dados por padrão, totalizando 98 bytes. O
+FCS da Ethernet normalmente não aparece na captura.)</p>
+<hr />
+<h1 class="parte" id="parte-iv-prática">Parte IV — Prática</h1>
+<h1 id="roteiro-observando-a-rede-de-verdade">14. Roteiro: observando a
+rede de verdade</h1>
+<p><strong>Tempo previsto:</strong> cerca de 35 minutos.<br />
+<strong>Como fazer:</strong> sozinho ou em dupla, nos computadores do
+laboratório. Se não for possível instalar o Wireshark, acompanhe a Parte
+3 pela demonstração em sala e responda às perguntas do mesmo jeito.</p>
+<h2 id="parte-1-quem-sou-eu-na-rede-5-min">Parte 1 — Quem sou eu na
+rede? (5 min)</h2>
+<ol type="1">
+<li>Rode <code>ipconfig /all</code> (Windows) ou <code>ip addr</code> e
+<code>ip route</code> (Linux).</li>
+<li>Anote: o <strong>endereço IP</strong>, o <strong>endereço físico
+(MAC)</strong> e o <strong>gateway padrão</strong> da sua interface de
+rede.</li>
+</ol>
+<h2 id="parte-2-ping-tracert-e-nslookup-15-min">Parte 2 —
+<code>ping</code>, <code>tracert</code> e <code>nslookup</code> (15
+min)</h2>
+<ol type="1">
+<li><code>ping</code> para o <strong>gateway</strong> anotado. Anote o
+RTT médio.</li>
+<li><code>ping</code> para um site nacional e para um site de outro
+continente (o professor indicará os endereços). Compare os RTTs.</li>
+<li><code>nslookup</code> para os dois sites. Anote os endereços
+IP.</li>
+<li><code>tracert</code> (ou <code>traceroute</code>) para os dois
+sites. Quantos saltos tem cada caminho? Em que salto o RTT aumenta
+bastante?</li>
+</ol>
+<h2 id="parte-3-o-encapsulamento-no-wireshark-15-min">Parte 3 — O
+encapsulamento no Wireshark (15 min)</h2>
+<ol type="1">
+<li>Abra o Wireshark e inicie a captura na interface ativa.</li>
+<li>No filtro de exibição, digite <code>icmp || dns</code>.</li>
+<li>Faça <code>ping</code> para um dos sites <strong>pelo
+nome</strong>.</li>
+<li>Pare a captura.</li>
+<li>Localize a consulta <strong>DNS</strong> e a resposta. Depois,
+localize um <strong>Echo request</strong> do ping.</li>
+<li>No Echo request, expanda cada camada e anote os endereços de origem
+e destino de <strong>Ethernet</strong> e de <strong>IP</strong>.</li>
+<li>Confira a conta do tamanho do quadro (seção 13).</li>
+</ol>
+<p><strong>Perguntas para o roteiro:</strong></p>
+<ol type="1">
+<li>Qual é o seu endereço IP? E o seu endereço MAC? Qual deles tem 48
+bits?</li>
+<li>Por que o RTT até o gateway é muito menor que o RTT até o site de
+outro continente?</li>
+<li>Por que algumas linhas do <code>tracert</code> aparecem com
+<code>*</code>?</li>
+<li>Qual mensagem apareceu primeiro na captura: a do DNS ou a do ICMP?
+Por quê?</li>
+<li>Na consulta DNS, que protocolo de transporte aparece (TCP ou
+UDP)?</li>
+<li>No Echo request, quais cabeçalhos aparecem, de fora para dentro? A
+que camada pertence cada um?</li>
+<li>O <strong>IP de destino</strong> do Echo request é o do site. E o
+<strong>MAC de destino</strong>: é do site? Compare com o MAC do seu
+gateway (<code>arp -a</code>). <em>(Guarde a resposta: ela volta no
+Encontro 05.)</em></li>
+</ol>
+<hr />
+<h1 class="parte" id="parte-v-exercícios-de-fixação">Parte V —
+Exercícios de fixação</h1>
+<h1 id="questões-conceituais">15. Questões conceituais</h1>
+<ol type="1">
+<li>Defina rede de computadores e cite os três tipos de elementos que a
+compõem.</li>
+<li>O que é um protocolo? Cite os três aspectos que ele define.</li>
+<li>Classifique: a rede do laboratório, a rede que liga as filiais de um
+banco em vários estados, a ligação Bluetooth entre o celular e o
+fone.</li>
+<li>Por que se diz que a Internet é uma “rede de redes”?</li>
+<li>Diferencie topologia física e lógica.</li>
+<li>Compare comutação de circuitos e de pacotes quanto ao uso dos
+recursos e ao atraso. Por que a Internet usa comutação de pacotes?</li>
+<li>Cite três vantagens de organizar as redes em camadas.</li>
+<li>Quais camadas do OSI foram reunidas na camada de aplicação do modelo
+híbrido?</li>
+<li>Qual o nome da unidade de dados na camada de transporte, de rede e
+de enlace?</li>
+<li>Explique o encapsulamento. O que acontece no receptor?</li>
+<li>Até que camada um switch “abre” o quadro? E um roteador?</li>
+<li>Qual a diferença entre o RTT mostrado pelo <code>ping</code> e o
+TTL?</li>
+<li>Um <code>ping</code> sem resposta prova que o servidor está
+desligado? Justifique.</li>
+<li>Para que serve o DNS? Por que ele aparece antes do ping na
+captura?</li>
+<li>Quais são as camadas foco desta disciplina?</li>
+</ol>
+<h1 id="exercícios-de-aplicação">16. Exercícios de aplicação</h1>
+<p><strong>Exercício A — Ordem das camadas.</strong> Ordene, do primeiro
+ao último, o que acontece no transmissor quando você acessa um site: (a)
+a mensagem HTTP é colocada em um segmento TCP; (b) os bits são
+transmitidos como sinais; (c) o pacote IP é colocado em um quadro
+Ethernet; (d) o navegador monta o pedido HTTP; (e) o segmento é colocado
+em um pacote IP.</p>
+<p><strong>Exercício B — Tamanho do quadro.</strong> Um
+<code>ping</code> do Linux envia 56 bytes de dados. Qual o tamanho do
+quadro Ethernet capturado, sem o FCS? Mostre a conta.</p>
+<p><strong>Exercício C — Leitura do <code>ping</code>.</strong> Uma
+resposta mostra <code>tempo=180ms TTL=52</code>. Supondo que o servidor
+começou com TTL 64, por quantos roteadores a resposta passou,
+aproximadamente? O RTT alto sugere um servidor perto ou longe?</p>
+<p><strong>Exercício D — Camada de cada item.</strong> Indique a camada
+(1 a 5): endereço MAC; endereço IP; porta 443; cabo de fibra óptica;
+consulta DNS; switch; roteador; sinal de rádio do Wi-Fi.</p>
+<h1 id="gabarito-orientativo">17. Gabarito orientativo</h1>
+<p><strong>Questões:</strong> (1) conjunto de dispositivos autônomos
+interligados; hosts, enlaces e equipamentos de interconexão. (2)
+Conjunto de regras: formato, ordem das mensagens e ações. (3) LAN, WAN,
+PAN. (4) É a interligação de milhares de redes independentes, mantida
+por padrões abertos. (5) Física: os cabos; lógica: como os dados
+circulam. (6) Circuitos reservam recursos e têm atraso previsível;
+pacotes compartilham e aproveitam melhor, com atraso variável; tráfego
+de computadores é em rajadas. (7) Divide a complexidade, permite trocar
+uma camada sem afetar as outras, facilita padronização e diagnóstico.
+(8) Sessão, apresentação e aplicação. (9) Segmento, pacote, quadro. (10)
+Cada camada acrescenta seu cabeçalho; no receptor, cada uma retira o seu
+e entrega o resto acima. (11) Camada 2; camada 3. (12) RTT é tempo de
+ida e volta; TTL é um contador de saltos no cabeçalho IP. (13) Não: o
+ICMP pode estar bloqueado. (14) Traduz nomes em endereços IP; o
+computador precisa do IP antes de enviar o ping. (15) Física e
+enlace.</p>
+<p><strong>Exercício A:</strong> d → a → e → c → b.</p>
+<p><strong>Exercício B:</strong> 14 + 20 + 8 + 56 = <strong>98
+bytes</strong>.</p>
+<p><strong>Exercício C:</strong> 64 − 52 = cerca de <strong>12
+roteadores</strong>; um RTT de 180 ms sugere um servidor distante (por
+exemplo, em outro continente).</p>
+<p><strong>Exercício D:</strong> MAC — 2; IP — 3; porta 443 — 4; fibra —
+1; DNS — 5; switch — 2; roteador — 3; sinal de rádio — 1.</p>
+<p><strong>Roteiro (orientações):</strong> (1) o MAC tem 48 bits. (2) O
+gateway está na rede local; o site distante exige muitos saltos e
+milhares de quilômetros de propagação. (3) Roteadores que não respondem
+às mensagens de aviso do TTL. (4) O DNS, porque o computador precisa do
+endereço IP antes do ping. (5) UDP. (6) Ethernet (2), IPv4 (3), ICMP.
+(7) Não: o MAC de destino é o do <strong>gateway</strong>; o IP de
+destino é o do site.</p>
+<hr />
+<h1 class="parte" id="parte-vi-síntese-e-planejamento">Parte VI —
+Síntese</h1>
+<h1 id="síntese">18. Síntese</h1>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Conceito</th>
+<th>Ideia principal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rede</td>
+<td>Dispositivos autônomos interligados que trocam informações</td>
+</tr>
+<tr class="even">
+<td>Protocolo</td>
+<td>Regras de formato, ordem e ações</td>
+</tr>
+<tr class="odd">
+<td>PAN, LAN, MAN, WAN</td>
+<td>Classificação por alcance</td>
+</tr>
+<tr class="even">
+<td>Internet</td>
+<td>Rede de redes, com padrões abertos (IEEE, IETF)</td>
+</tr>
+<tr class="odd">
+<td>Topologia</td>
+<td>Física (cabos) × lógica (circulação dos dados)</td>
+</tr>
+<tr class="even">
+<td>Comutação de pacotes</td>
+<td>Recursos compartilhados; ideal para rajadas</td>
+</tr>
+<tr class="odd">
+<td>Camadas</td>
+<td>Cada uma resolve um problema e serve à de cima</td>
+</tr>
+<tr class="even">
+<td>Encapsulamento</td>
+<td>Cada camada acrescenta seu cabeçalho; o receptor desfaz</td>
+</tr>
+<tr class="odd">
+<td>PDUs</td>
+<td>Dados → segmento → pacote → quadro → bits</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>  5 Aplicação     DNS, HTTP          nomes
+  4 Transporte    TCP, UDP           portas
+  3 Rede          IP, ICMP           endereço IP       ← roteador
+  2 Enlace        Ethernet, Wi-Fi    endereço MAC      ← switch     ┐ foco desta
+  1 Física        cabos, fibra, rádio                  ← hub        ┘ disciplina</code></pre>
+<h1 id="para-o-próximo-encontro">19. Para o próximo encontro</h1>
+<p>Vimos que, no fim do encapsulamento, a camada física transmite
+<strong>bits como sinais</strong>. Mas o que é, exatamente, um sinal?
+Como um <code>0</code> e um <code>1</code> viram tensão elétrica, luz ou
+ondas de rádio? E por que uma conexão anunciada como “1 Gbit/s” quase
+nunca entrega 1 Gbit/s?</p>
+<blockquote>
+<p><strong>Pergunta para levar:</strong> o que limita a velocidade de um
+enlace?</p>
+</blockquote>
+<p>No <strong>Encontro 02</strong>, vamos estudar <strong>sinais, taxas
+e desempenho</strong>.</p>
+<h1 id="referências">20. Referências</h1>
+<p>TANENBAUM, Andrew S.; WETHERALL, David J. <strong>Computer
+Networks</strong>. 5. ed. Boston: Prentice Hall, 2011. Capítulo 1 —
+<em>Introduction</em> (usos das redes, hardware de rede, software de
+rede, modelos de referência OSI e TCP/IP, modelo híbrido).</p>
+<p>KUROSE, James F.; ROSS, Keith W. <strong>Redes de computadores e a
+Internet: uma abordagem top-down</strong>. São Paulo: Pearson. (Capítulo
+1: a Internet, comutação de pacotes e de circuitos, camadas de
+protocolos.)</p>
+<blockquote>
+<p><strong>Observação:</strong> os endereços IP das saídas de exemplo
+(<code>192.0.2.0/24</code>, <code>198.51.100.0/24</code> e
+<code>203.0.113.0/24</code>) são faixas reservadas para documentação e
+não correspondem a servidores reais. Os endereços MAC são fictícios. Na
+prática, use os sites e endereços indicados em sala.</p>
+</blockquote>
+  </article>
+</main>
+</div>
+<button class="menu-btn" id="menuBtn" aria-label="Abrir sumário">☰ Sumário</button>
+<script>
+(function(){
+  document.querySelectorAll('article table').forEach(function(t){
+    var w=document.createElement('div'); w.className='table-wrap';
+    t.parentNode.insertBefore(w,t); w.appendChild(t);
+  });
+  document.querySelectorAll('article h1.parte').forEach(function(h){
+    var a=document.querySelector('aside a[href="#'+h.id+'"]'); if(a) a.parentNode.classList.add('parte-item');
+  });
+  var toc=document.getElementById('toc'), btn=document.getElementById('menuBtn');
+  btn.addEventListener('click',function(){toc.classList.toggle('open')});
+  toc.addEventListener('click',function(e){ if(e.target.tagName==='A') toc.classList.remove('open') });
+  var links=[].slice.call(toc.querySelectorAll('a'));
+  var map={}; links.forEach(function(a){ map[decodeURIComponent(a.getAttribute('href').slice(1))]=a });
+  var heads=[].slice.call(document.querySelectorAll('article h1[id]'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){l.classList.remove('active')});
+          var a=map[e.target.id]; if(a){a.classList.add('active');
+            if(window.innerWidth>900){
+              var top=a.offsetTop, h=toc.clientHeight;
+              if(top<toc.scrollTop+60 || top>toc.scrollTop+h-60) toc.scrollTop=top-h/3;
+            }}
+        }
+      });
+    },{rootMargin:'0px 0px -75% 0px'});
+    heads.forEach(function(h){io.observe(h)});
+  }
+})();
+</script>
+</body>
+</html>

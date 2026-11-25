@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INRC230002 — Materiais</title>
+<style>
+:root{
+  --bg:#f7f5f0; --paper:#ffffff; --ink:#1d2330; --muted:#5d6676;
+  --line:#e3dfd6; --accent:#0f6e8c; --accent-soft:#e3f1f5;
+  --warm:#b45f1e; --warm-soft:#fbefe4; --code-bg:#f3f1ec;
+  --side:#fbfaf7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+    --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+    --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+  --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+  --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:16px}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.65 "Source Serif 4","Iowan Old Style",Georgia,serif;}
+.layout{display:grid; grid-template-columns:290px minmax(0,1fr); min-height:100vh}
+aside{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--side);
+  border-right:1px solid var(--line); padding:28px 20px 40px;
+  font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+aside .brand{font-weight:700; letter-spacing:.04em; font-size:12px; color:var(--accent);
+  text-transform:uppercase; margin-bottom:4px}
+aside .brand-sub{color:var(--muted); font-size:13px; margin-bottom:20px}
+aside ul{list-style:none; margin:0; padding:0}
+aside ul ul{padding-left:12px; display:none}
+aside li a{display:block; padding:4px 8px; border-radius:6px; color:var(--ink);
+  text-decoration:none}
+aside li a:hover{background:var(--accent-soft)}
+aside li a.active{background:var(--accent-soft); color:var(--accent); font-weight:600}
+main{padding:48px 24px 96px}
+article{max-width:780px; margin:0 auto}
+header.hero{max-width:780px; margin:0 auto 36px; padding-bottom:28px; border-bottom:2px solid var(--ink)}
+.hero .code{font:600 13px/1 system-ui,sans-serif; letter-spacing:.08em; color:var(--accent);
+  text-transform:uppercase}
+.hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.15; margin:12px 0 10px; font-weight:700}
+.hero .meta{font:14px system-ui,sans-serif; color:var(--muted)}
+.hero .meta b{color:var(--ink)}
+h1,h2,h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.25}
+article h1{font-size:26px; margin:64px 0 16px; padding-top:8px}
+article h2{font-size:20px; margin:40px 0 12px; color:var(--accent)}
+article h3{font-size:17px; margin:28px 0 8px}
+article h1.parte{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--warm);
+  margin:72px 0 -36px; padding:0; border-top:2px solid var(--warm); padding-top:10px}
+aside li.parte-item > a{margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--warm); font-weight:700}
+aside li.parte-item > a:hover{background:transparent}
+hr{display:none}
+a{color:var(--accent)}
+strong{font-weight:650}
+blockquote{margin:24px 0; padding:14px 18px; background:var(--warm-soft);
+  border-left:4px solid var(--warm); border-radius:0 8px 8px 0}
+blockquote p{margin:.3em 0}
+pre{background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:16px 18px; overflow-x:auto; font:13.5px/1.4 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.9em}
+p code,li code{background:var(--code-bg); padding:1px 5px; border-radius:4px}
+.table-wrap{overflow-x:auto; margin:20px 0}
+table{border-collapse:collapse; width:100%; font:14.5px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+th,td{padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+thead th{background:var(--accent-soft); color:var(--ink); font-weight:650; border-bottom:2px solid var(--accent)}
+tbody tr:hover{background:var(--accent-soft)}
+li{margin:4px 0}
+math[display="block"]{margin:18px 0; font-size:1.15em; overflow-x:auto}
+.menu-btn{display:none}
+@media (max-width:900px){
+  .layout{display:block}
+  aside{position:fixed; inset:0 auto 0 0; width:82%; max-width:320px; z-index:20;
+    transform:translateX(-100%); transition:transform .2s; box-shadow:0 0 30px rgba(0,0,0,.25)}
+  aside.open{transform:none}
+  .menu-btn{display:block; position:fixed; right:16px; bottom:16px; z-index:30;
+    background:var(--accent); color:#fff; border:0; border-radius:999px; padding:12px 18px;
+    font:600 14px system-ui,sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.2)}
+  main{padding:28px 16px 80px}
+}
+@media print{
+  aside,.menu-btn{display:none}
+  .layout{display:block}
+  body{background:#fff; font-size:12pt}
+  pre,table,blockquote{break-inside:avoid}
+  article h1{break-before:page; margin-top:0}
+}
+</style>
+<style>
+.wrap{max-width:860px;margin:0 auto;padding:56px 16px 80px}
+.wrap header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:32px}
+.wrap .code{font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+.wrap h1{font:700 clamp(28px,4.5vw,40px)/1.15 system-ui,-apple-system,"Segoe UI",sans-serif;margin:12px 0 8px}
+.wrap .sub{font:15px system-ui,sans-serif;color:var(--muted)}
+.grid{display:grid;gap:14px}
+.card{display:block;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:10px;padding:18px 20px;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.card .num{font:700 12px system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--warm)}
+.card .t{font:650 19px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;margin:6px 0}
+.card .d{font-size:15px;color:var(--muted)}
+.foot{margin-top:32px;font:13px system-ui,sans-serif;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="code">INRC230002</div><h1>Redes de Computadores: Acesso à Rede</h1>
+<div class="sub">Materiais didáticos — Encontros 01 a 05</div></header>
+<div class="grid">
+<a class="card" href="INRC230002_Encontro_01_Introducao_Camadas.html"><div class="num">Encontro 01</div><div class="t">Introdução às Redes, Modelos em Camadas e Encapsulamento</div><div class="d">O que é uma rede, camadas OSI e TCP/IP, encapsulamento; prática com ping, tracert, nslookup e Wireshark.</div></a>
+<a class="card" href="INRC230002_Encontro_02_Sinais_Taxas.html"><div class="num">Encontro 02</div><div class="t">Sinais, Taxas e Transmissão</div><div class="d">Bits viram sinais; decibéis, SNR, Nyquist e Shannon; atrasos e vazão; medindo o próprio enlace.</div></a>
+<a class="card" href="INRC230002_Encontro_03_Meios_Transmissao_Redes_Sem_Fio.html"><div class="num">Encontro 03</div><div class="t">Camada Física: Meios de Transmissão e Redes sem Fio</div><div class="d">Par trançado, coaxial, fibra, rádio e Wi-Fi; prática no Packet Tracer sobre "ter link".</div></a>
+<a class="card" href="INRC230002_Encontro_04_Camada_Enlace.html"><div class="num">Encontro 04</div><div class="t">Camada de Enlace: Quadros, Erros e Acesso ao Meio</div><div class="d">Enquadramento, CRC, endereços MAC, ALOHA, CSMA/CD e a evolução hub → switch → roteador.</div></a>
+<a class="card" href="INRC230002_Encontro_05_Ethernet_ARP_Comutacao.html"><div class="num">Encontro 05</div><div class="t">Ethernet, ARP e Comutação de Quadros</div><div class="d">Como o computador acha o MAC (ARP) e como o switch acha a porta; prática no Wireshark.</div></a>
+<a class="card" href="INRC230002_Lista_Revisao.html" style="border-left-color:var(--warm)"><div class="num">Revisão</div><div class="t">Lista de Revisão — Encontros 01 a 05</div><div class="d">20 questões para resolver e entregar no dia da prova.</div></a>
+
+<div class="foot">Referência principal: Tanenbaum &amp; Wetherall, <i>Computer Networks</i>, 5. ed. Cada página abre offline e pode ser impressa.</div>
+</div>
+</body>
+</html>

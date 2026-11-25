@@ -1,0 +1,1596 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encontro 05 — Ethernet, ARP e Comutação</title>
+<style>
+:root{
+  --bg:#f7f5f0; --paper:#ffffff; --ink:#1d2330; --muted:#5d6676;
+  --line:#e3dfd6; --accent:#0f6e8c; --accent-soft:#e3f1f5;
+  --warm:#b45f1e; --warm-soft:#fbefe4; --code-bg:#f3f1ec;
+  --side:#fbfaf7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+    --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+    --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+  --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+  --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:16px}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.65 "Source Serif 4","Iowan Old Style",Georgia,serif;}
+.layout{display:grid; grid-template-columns:290px minmax(0,1fr); min-height:100vh}
+aside{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--side);
+  border-right:1px solid var(--line); padding:28px 20px 40px;
+  font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+aside .brand{font-weight:700; letter-spacing:.04em; font-size:12px; color:var(--accent);
+  text-transform:uppercase; margin-bottom:4px}
+aside .brand-sub{color:var(--muted); font-size:13px; margin-bottom:20px}
+aside ul{list-style:none; margin:0; padding:0}
+aside ul ul{padding-left:12px; display:none}
+aside li a{display:block; padding:4px 8px; border-radius:6px; color:var(--ink);
+  text-decoration:none}
+aside li a:hover{background:var(--accent-soft)}
+aside li a.active{background:var(--accent-soft); color:var(--accent); font-weight:600}
+main{padding:48px 24px 96px}
+article{max-width:780px; margin:0 auto}
+header.hero{max-width:780px; margin:0 auto 36px; padding-bottom:28px; border-bottom:2px solid var(--ink)}
+.hero .code{font:600 13px/1 system-ui,sans-serif; letter-spacing:.08em; color:var(--accent);
+  text-transform:uppercase}
+.hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.15; margin:12px 0 10px; font-weight:700}
+.hero .meta{font:14px system-ui,sans-serif; color:var(--muted)}
+.hero .meta b{color:var(--ink)}
+h1,h2,h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.25}
+article h1{font-size:26px; margin:64px 0 16px; padding-top:8px}
+article h2{font-size:20px; margin:40px 0 12px; color:var(--accent)}
+article h3{font-size:17px; margin:28px 0 8px}
+article h1.parte{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--warm);
+  margin:72px 0 -36px; padding:0; border-top:2px solid var(--warm); padding-top:10px}
+aside li.parte-item > a{margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--warm); font-weight:700}
+aside li.parte-item > a:hover{background:transparent}
+hr{display:none}
+a{color:var(--accent)}
+strong{font-weight:650}
+blockquote{margin:24px 0; padding:14px 18px; background:var(--warm-soft);
+  border-left:4px solid var(--warm); border-radius:0 8px 8px 0}
+blockquote p{margin:.3em 0}
+pre{background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:16px 18px; overflow-x:auto; font:13.5px/1.4 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.9em}
+p code,li code{background:var(--code-bg); padding:1px 5px; border-radius:4px}
+.table-wrap{overflow-x:auto; margin:20px 0}
+table{border-collapse:collapse; width:100%; font:14.5px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+th,td{padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+thead th{background:var(--accent-soft); color:var(--ink); font-weight:650; border-bottom:2px solid var(--accent)}
+tbody tr:hover{background:var(--accent-soft)}
+li{margin:4px 0}
+math[display="block"]{margin:18px 0; font-size:1.15em; overflow-x:auto}
+.menu-btn{display:none}
+@media (max-width:900px){
+  .layout{display:block}
+  aside{position:fixed; inset:0 auto 0 0; width:82%; max-width:320px; z-index:20;
+    transform:translateX(-100%); transition:transform .2s; box-shadow:0 0 30px rgba(0,0,0,.25)}
+  aside.open{transform:none}
+  .menu-btn{display:block; position:fixed; right:16px; bottom:16px; z-index:30;
+    background:var(--accent); color:#fff; border:0; border-radius:999px; padding:12px 18px;
+    font:600 14px system-ui,sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.2)}
+  main{padding:28px 16px 80px}
+}
+@media print{
+  aside,.menu-btn{display:none}
+  .layout{display:block}
+  body{background:#fff; font-size:12pt}
+  pre,table,blockquote{break-inside:avoid}
+  article h1{break-before:page; margin-top:0}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside id="toc">
+  <div class="brand">INRC230002</div>
+  <div class="brand-sub">Redes de Computadores: Acesso à Rede</div>
+  <ul>
+  <li><a href="#apresentação"
+  id="toc-apresentação">Apresentação</a></li>
+  <li><a href="#parte-i-retomada-ethernet-e-endereços-mac"
+  id="toc-parte-i-retomada-ethernet-e-endereços-mac">Parte I — Retomada:
+  Ethernet e endereços MAC</a></li>
+  <li><a href="#ethernet-em-uma-página"
+  id="toc-ethernet-em-uma-página">1. Ethernet em uma página</a></li>
+  <li><a href="#o-quadro-ethernet-revisão"
+  id="toc-o-quadro-ethernet-revisão">2. O quadro Ethernet
+  (revisão)</a></li>
+  <li><a href="#endereço-mac-revisão" id="toc-endereço-mac-revisão">3.
+  Endereço MAC (revisão)</a></li>
+  <li><a href="#mac-ip-por-que-dois-endereços"
+  id="toc-mac-ip-por-que-dois-endereços">4. MAC × IP: por que dois
+  endereços?</a></li>
+  <li><a href="#unicast-broadcast-e-multicast-revisão"
+  id="toc-unicast-broadcast-e-multicast-revisão">5. Unicast, broadcast e
+  multicast (revisão)</a></li>
+  <li><a href="#parte-ii-arp-de-ip-para-mac"
+  id="toc-parte-ii-arp-de-ip-para-mac">Parte II — ARP: de IP para
+  MAC</a></li>
+  <li><a href="#o-problema" id="toc-o-problema">6. O problema</a></li>
+  <li><a href="#como-o-arp-funciona" id="toc-como-o-arp-funciona">7.
+  Como o ARP funciona</a></li>
+  <li><a href="#e-se-o-destino-estiver-em-outra-rede"
+  id="toc-e-se-o-destino-estiver-em-outra-rede">8. E se o destino
+  estiver em outra rede?</a></li>
+  <li><a href="#comandos-úteis" id="toc-comandos-úteis">9. Comandos
+  úteis</a></li>
+  <li><a href="#parte-iii-como-o-switch-aprende-e-encaminha"
+  id="toc-parte-iii-como-o-switch-aprende-e-encaminha">Parte III — Como
+  o switch aprende e encaminha</a></li>
+  <li><a href="#switch-ponte-e-transparência"
+  id="toc-switch-ponte-e-transparência">10. Switch, ponte e
+  transparência</a></li>
+  <li><a href="#aprendizado-olhar-a-origem"
+  id="toc-aprendizado-olhar-a-origem">11. Aprendizado: olhar a
+  origem</a></li>
+  <li><a href="#destino-desconhecido-flooding"
+  id="toc-destino-desconhecido-flooding">12. Destino desconhecido:
+  flooding</a></li>
+  <li><a href="#a-resposta-ensina-o-switch"
+  id="toc-a-resposta-ensina-o-switch">13. A resposta ensina o
+  switch</a></li>
+  <li><a href="#as-quatro-decisões-do-switch"
+  id="toc-as-quatro-decisões-do-switch">14. As quatro decisões do
+  switch</a></li>
+  <li><a href="#expiração-das-entradas-aging"
+  id="toc-expiração-das-entradas-aging">15. Expiração das entradas
+  (<em>aging</em>)</a></li>
+  <li><a href="#quando-o-switch-encaminha-store-and-forward-cut-through"
+  id="toc-quando-o-switch-encaminha-store-and-forward-cut-through">16.
+  Quando o switch encaminha: <em>store-and-forward</em> ×
+  <em>cut-through</em></a></li>
+  <li><a href="#uma-porta-vários-macs"
+  id="toc-uma-porta-vários-macs">17. Uma porta, vários MACs</a></li>
+  <li><a href="#parte-iv-domínios-loops-e-vlans"
+  id="toc-parte-iv-domínios-loops-e-vlans">Parte IV — Domínios, loops e
+  VLANs</a></li>
+  <li><a href="#domínios-de-colisão-e-de-broadcast"
+  id="toc-domínios-de-colisão-e-de-broadcast">18. Domínios de colisão e
+  de broadcast</a></li>
+  <li><a href="#loops-entre-switches" id="toc-loops-entre-switches">19.
+  Loops entre switches</a></li>
+  <li><a href="#spanning-tree-protocol-stp"
+  id="toc-spanning-tree-protocol-stp">20. Spanning Tree Protocol
+  (STP)</a></li>
+  <li><a href="#vlans-introdução" id="toc-vlans-introdução">21. VLANs —
+  introdução</a></li>
+  <li><a href="#parte-v-exemplo-completo"
+  id="toc-parte-v-exemplo-completo">Parte V — Exemplo completo</a></li>
+  <li><a href="#um-ping-em-uma-rede-com-switch"
+  id="toc-um-ping-em-uma-rede-com-switch">22. Um ping em uma rede com
+  switch</a></li>
+  <li><a href="#parte-vi-prática" id="toc-parte-vi-prática">Parte VI —
+  Prática</a></li>
+  <li><a href="#wireshark-capturando-o-arp-de-verdade"
+  id="toc-wireshark-capturando-o-arp-de-verdade">23. Wireshark —
+  capturando o ARP de verdade</a></li>
+  <li><a href="#atividade-você-é-o-switch"
+  id="toc-atividade-você-é-o-switch">24. Atividade: Você é o
+  switch!</a></li>
+  <li><a href="#parte-vii-exercícios-de-fixação"
+  id="toc-parte-vii-exercícios-de-fixação">Parte VII — Exercícios de
+  fixação</a></li>
+  <li><a href="#questões-conceituais" id="toc-questões-conceituais">25.
+  Questões conceituais</a></li>
+  <li><a href="#questão-de-análise-dois-switches"
+  id="toc-questão-de-análise-dois-switches">26. Questão de análise —
+  dois switches</a></li>
+  <li><a href="#questão-de-análise-arp-e-switch"
+  id="toc-questão-de-análise-arp-e-switch">27. Questão de análise — ARP
+  e switch</a></li>
+  <li><a href="#parte-viii-síntese" id="toc-parte-viii-síntese">Parte
+  VIII — Síntese</a></li>
+  <li><a href="#revisão-dos-principais-conceitos"
+  id="toc-revisão-dos-principais-conceitos">28. Revisão dos principais
+  conceitos</a></li>
+  <li><a href="#para-o-próximo-encontro"
+  id="toc-para-o-próximo-encontro">29. Próximos passos</a></li>
+  <li><a href="#referências" id="toc-referências">Referências</a></li>
+  </ul>
+</aside>
+<main>
+  <header class="hero">
+    <div class="code">INRC230002 · Encontro 05</div>
+    <h1>Ethernet, ARP e Comutação de Quadros</h1>
+    <div class="meta"><strong>Unidade temática:</strong> Camada de Enlace de Dados<br><strong>Referência principal:</strong> TANENBAUM, Andrew S.;
+WETHERALL, David J. <em>Computer Networks</em>. 5. ed. Prentice Hall,
+2011. Capítulo 4 (<em>The Medium Access Control Sublayer</em>), seções
+sobre Ethernet, pontes (<em>bridges</em>) e switches; capítulo 5, seção
+sobre ARP.</div>
+  </header>
+  <article>
+<h1 id="apresentação">Apresentação</h1>
+<blockquote>
+<p><strong>Retomando o Encontro 04:</strong> vimos que um quadro
+Ethernet precisa do <strong>endereço MAC de destino</strong>. Mas,
+quando você digita <code>ping 192.168.0.20</code>, informa um endereço
+<strong>IP</strong>, não um MAC. E vimos que o switch encaminha o quadro
+“só para a porta certa”, sem explicar <strong>como ele sabe</strong>
+qual é a porta certa.</p>
+</blockquote>
+<p>Este encontro responde a essas duas perguntas, que estão mais ligadas
+do que parece:</p>
+<blockquote>
+<p><strong>1. Como um computador descobre o endereço MAC de quem tem um
+determinado IP?</strong><br />
+<strong>2. Como um switch descobre em qual porta está cada endereço
+MAC?</strong></p>
+</blockquote>
+<p>Como veremos, a resposta à primeira pergunta (o protocolo
+<strong>ARP</strong>) é exatamente o que “ensina” o switch na
+segunda.</p>
+<h2 id="objetivos-de-aprendizagem">Objetivos de aprendizagem</h2>
+<p>Ao final deste encontro, você deverá ser capaz de:</p>
+<ol type="1">
+<li>relacionar a evolução da Ethernet (barramento → hub → switch) com os
+problemas estudados no Encontro 04;</li>
+<li>identificar os campos de um quadro Ethernet em uma captura
+real;</li>
+<li>explicar o funcionamento do <strong>ARP</strong> (requisição em
+broadcast, resposta em unicast e cache);</li>
+<li>explicar por que, para falar com outra rede, o computador busca o
+MAC do <strong>gateway</strong>;</li>
+<li>descrever as operações de um switch: <strong>aprendizado,
+encaminhamento, filtragem e inundação</strong> (<em>flooding</em>);</li>
+<li>diferenciar <strong>flooding</strong> de
+<strong>broadcast</strong>;</li>
+<li>explicar a expiração (<em>aging</em>) de entradas na tabela
+MAC;</li>
+<li>diferenciar os modos de comutação <em>store-and-forward</em> e
+<em>cut-through</em>;</li>
+<li>diferenciar domínios de colisão e de broadcast em redes com hubs,
+switches e roteadores;</li>
+<li>explicar por que loops de camada 2 são graves e como o
+<strong>STP</strong> os evita;</li>
+<li>reconhecer a função de uma <strong>VLAN</strong>;</li>
+<li>capturar e interpretar uma troca ARP no
+<strong>Wireshark</strong>;</li>
+<li>simular, em papel, as decisões de um switch.</li>
+</ol>
+<hr />
+<h1 class="parte" id="parte-i-retomada-ethernet-e-endereços-mac">Parte I
+— Retomada: Ethernet e endereços MAC</h1>
+<h1 id="ethernet-em-uma-página">1. Ethernet em uma página</h1>
+<p><strong>Ethernet</strong> é a família de tecnologias de redes locais
+padronizada pelo <strong>IEEE 802.3</strong>. Ela define tanto a camada
+<strong>física</strong> (cabos, sinais, velocidades) quanto a camada de
+<strong>enlace</strong> (formato do quadro, endereçamento MAC e,
+historicamente, o acesso ao meio por CSMA/CD).</p>
+<p>Ethernet não é sinônimo de um tipo de cabo: a mesma Ethernet funciona
+sobre par trançado (1000BASE-T) ou fibra óptica (1000BASE-SX,
+10GBASE-LR), como vimos no Encontro 03.</p>
+<p>A evolução da Ethernet resume os Encontros 03 e 04:</p>
+<pre class="text"><code>1. BARRAMENTO (anos 1980)       2. HUB (anos 1990)            3. SWITCH (hoje)
+
+PC A    PC B    PC C                 ┌───────┐                    ┌─────────┐
+ │       │       │                   │  HUB  │                    │ SWITCH  │
+═╧═══════╧═══════╧═══                └───┬───┘                    └────┬────┘
+   cabo compartilhado              ┌─────┼─────┐                 ┌─────┼─────┐
+                                  PC A  PC B  PC C              PC A  PC B  PC C
+
+meio compartilhado              estrela física, mas           enlaces dedicados,
+CSMA/CD, half-duplex            meio compartilhado            full-duplex, sem colisões
+                                (um domínio de colisão)</code></pre>
+<p>O hub mudou a <strong>topologia física</strong> (de barramento para
+estrela), o que facilitou a instalação e a manutenção, mas
+<strong>não</strong> mudou o comportamento: ele repete bits para todas
+as portas, e todos continuam disputando o mesmo meio. Foi o
+<strong>switch</strong> que mudou o comportamento, ao ler o endereço de
+destino e encaminhar cada quadro só para onde ele precisa ir.</p>
+<h1 id="o-quadro-ethernet-revisão">2. O quadro Ethernet (revisão)</h1>
+<pre class="text"><code> 7 bytes  1     6 bytes    6 bytes    2 bytes    46 a 1500 bytes    4 bytes
+┌─────────┬───┬──────────┬──────────┬─────────┬──────────────────┬─────────┐
+│Preâmbulo│SFD│ MAC      │ MAC      │EtherType│      DADOS       │   FCS   │
+│         │   │ DESTINO  │ ORIGEM   │         │  (+ enchimento)  │ (CRC-32)│
+└─────────┴───┴──────────┴──────────┴─────────┴──────────────────┴─────────┘
+                ╰──────────────── quadro: 64 a 1518 bytes ──────────────╯</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Campo</th>
+<th>Função</th>
+<th>Quem usa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MAC de destino</td>
+<td>Para quem é o quadro</td>
+<td>Switch, para <strong>encaminhar</strong></td>
+</tr>
+<tr class="even">
+<td>MAC de origem</td>
+<td>Quem enviou</td>
+<td>Switch, para <strong>aprender</strong></td>
+</tr>
+<tr class="odd">
+<td>EtherType</td>
+<td>Protocolo nos dados: <code>0x0800</code> IPv4, <code>0x0806</code>
+<strong>ARP</strong>, <code>0x86DD</code> IPv6</td>
+<td>Receptor, para entregar à camada certa</td>
+</tr>
+<tr class="even">
+<td>Dados</td>
+<td>Pacote da camada superior; se &lt; 46 bytes, recebe enchimento</td>
+<td>Camada superior</td>
+</tr>
+<tr class="odd">
+<td>FCS</td>
+<td>CRC-32 para <strong>detectar</strong> erros; quadro com erro é
+<strong>descartado</strong></td>
+<td>Switch e receptor</td>
+</tr>
+</tbody>
+</table>
+<p>Os tamanhos de 64 e 1518 bytes <strong>não incluem</strong> o
+preâmbulo e o SFD. O mínimo de 64 bytes vem da detecção de colisões na
+Ethernet compartilhada (Encontro 04, seção 19.3). Com uma marca de VLAN
+(seção 17), o máximo passa a 1522 bytes.</p>
+<p>Observe os dois papéis do quadro para o switch: o
+<strong>destino</strong> serve para <strong>encaminhar</strong>, e a
+<strong>origem</strong> serve para <strong>aprender</strong>. Essa
+distinção é o centro deste encontro.</p>
+<h1 id="endereço-mac-revisão">3. Endereço MAC (revisão)</h1>
+<p>O endereço MAC (<em>Medium Access Control address</em>) tem
+<strong>48 bits (6 bytes)</strong>, escritos como 12 dígitos
+hexadecimais. Cada dígito hexadecimal vale 4 bits, e 12 × 4 = 48
+bits.</p>
+<pre class="text"><code>   02 : 1A : 2B  :  3C : 4D : 5E          (exemplo fictício)
+  ╰─────┬─────╯    ╰─────┬─────╯
+   OUI (fabricante)   identificação da interface</code></pre>
+<ul>
+<li>Os 3 primeiros bytes (<strong>OUI</strong>) identificam o
+fabricante; os 3 últimos, a interface.</li>
+<li>Bits do primeiro byte: <strong>I/G</strong> (unicast × grupo) e
+<strong>U/L</strong> (universal × administrado localmente). No exemplo,
+<code>02</code> indica unicast administrado localmente.</li>
+<li>O MAC pode ser <strong>alterado</strong> por software, e celulares
+usam <strong>MACs aleatórios</strong> em cada rede Wi-Fi. Não se deve
+presumir que um MAC seja fixo ou que identifique um aparelho para
+sempre.</li>
+</ul>
+<h1 id="mac-ip-por-que-dois-endereços">4. MAC × IP: por que dois
+endereços?</h1>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Característica</th>
+<th>Endereço MAC</th>
+<th>Endereço IP</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Camada</td>
+<td>Enlace (2)</td>
+<td>Rede (3)</td>
+</tr>
+<tr class="even">
+<td>Tamanho</td>
+<td>48 bits</td>
+<td>IPv4: 32 bits · IPv6: 128 bits</td>
+</tr>
+<tr class="odd">
+<td>Alcance</td>
+<td><strong>Só o enlace local</strong></td>
+<td><strong>Fim a fim</strong>, entre redes</td>
+</tr>
+<tr class="even">
+<td>Quem atribui</td>
+<td>Fabricante (ou o sistema)</td>
+<td>Administrador da rede ou DHCP</td>
+</tr>
+<tr class="odd">
+<td>Quem usa para encaminhar</td>
+<td><strong>Switch</strong></td>
+<td><strong>Roteador</strong></td>
+</tr>
+<tr class="even">
+<td>Muda ao longo do caminho?</td>
+<td><strong>Sim</strong>, a cada roteador</td>
+<td><strong>Não</strong> (em geral)</td>
+</tr>
+</tbody>
+</table>
+<p>Uma analogia: o <strong>IP</strong> é como o endereço completo do
+destinatário em uma carta, que não muda durante a viagem. O
+<strong>MAC</strong> é como a instrução “entregue ao vizinho da porta ao
+lado”: vale só para o trecho atual e é reescrita a cada agência dos
+correios (roteador) por onde a carta passa.</p>
+<pre class="text"><code>PC A ── Switch ── Roteador (gateway) ── ... ── Servidor
+
+Quadro no primeiro enlace:
+  MAC destino = MAC do ROTEADOR       ← só até o próximo salto
+  IP  destino = IP do SERVIDOR        ← até o destino final</code></pre>
+<p>Isso cria um problema prático: o computador conhece o
+<strong>IP</strong> de destino, mas, para montar o quadro, precisa de um
+<strong>MAC</strong>. Quem faz essa ligação é o ARP.</p>
+<h1 id="unicast-broadcast-e-multicast-revisão">5. Unicast, broadcast e
+multicast (revisão)</h1>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tipo</th>
+<th>Endereço MAC de destino</th>
+<th>O switch envia para…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Unicast</strong></td>
+<td>MAC de uma interface</td>
+<td>a porta do destinatário (se souber qual é)</td>
+</tr>
+<tr class="even">
+<td><strong>Broadcast</strong></td>
+<td><code>FF:FF:FF:FF:FF:FF</code></td>
+<td><strong>todas</strong> as portas, exceto a de entrada</td>
+</tr>
+<tr class="odd">
+<td><strong>Multicast</strong></td>
+<td>bit I/G = 1 (ex.: <code>01:00:5E:…</code>)</td>
+<td>por padrão, todas as portas, exceto a de entrada*</td>
+</tr>
+</tbody>
+</table>
+<p>* Switches mais avançados podem restringir o multicast às portas
+interessadas, um recurso chamado <em>IGMP snooping</em>.</p>
+<hr />
+<h1 class="parte" id="parte-ii-arp-de-ip-para-mac">Parte II — ARP: de IP
+para MAC</h1>
+<h1 id="o-problema">6. O problema</h1>
+<p>O computador A quer enviar um pacote para o IP
+<code>192.168.0.20</code>, que está na mesma rede local. Ele sabe o
+próprio MAC e o próprio IP, e sabe o IP de destino. Falta uma informação
+para montar o quadro:</p>
+<pre class="text"><code>┌────────────────────┬────────────────────┬──────────┬─────────────────────────┐
+│ MAC destino: ???   │ MAC origem: A      │ 0x0800   │ IP destino 192.168.0.20 │
+└────────────────────┴────────────────────┴──────────┴─────────────────────────┘</code></pre>
+<p>O <strong>ARP</strong> (<em>Address Resolution Protocol</em>, RFC
+826) resolve exatamente isso: dado um <strong>IP da rede local</strong>,
+descobre o <strong>MAC</strong> correspondente.</p>
+<h1 id="como-o-arp-funciona">7. Como o ARP funciona</h1>
+<p><strong>Passo 1 — Requisição (<em>ARP request</em>), em
+broadcast.</strong> A pergunta a <strong>todos</strong> da rede
+local:</p>
+<pre class="text"><code>Quadro Ethernet
+  MAC destino: FF:FF:FF:FF:FF:FF   (broadcast: todos recebem)
+  MAC origem:  MAC de A
+  EtherType:   0x0806              (ARP)
+
+Mensagem ARP (opcode 1 = request)
+  &quot;Quem tem 192.168.0.20? Responda para 192.168.0.10.&quot;
+  Remetente:  MAC de A, IP 192.168.0.10
+  Alvo:       MAC 00:00:00:00:00:00 (desconhecido), IP 192.168.0.20</code></pre>
+<p><strong>Passo 2 — Resposta (<em>ARP reply</em>), em unicast.</strong>
+Todos recebem a pergunta, mas só o dono do IP <code>192.168.0.20</code>
+(o computador B) responde, <strong>diretamente para A</strong>:</p>
+<pre class="text"><code>Quadro Ethernet
+  MAC destino: MAC de A            (unicast: só A)
+  MAC origem:  MAC de B
+  EtherType:   0x0806
+
+Mensagem ARP (opcode 2 = reply)
+  &quot;192.168.0.20 está em &lt;MAC de B&gt;.&quot;</code></pre>
+<p><strong>Passo 3 — Cache.</strong> A guarda a associação IP → MAC em
+uma <strong>tabela ARP</strong> (cache), para não precisar perguntar de
+novo a cada pacote. As entradas <strong>expiram</strong> depois de algum
+tempo (de segundos a alguns minutos, conforme o sistema operacional),
+para acompanhar mudanças na rede. B também aproveita a pergunta e guarda
+o MAC de A.</p>
+<pre class="text"><code>     A                       todos da rede                       B
+     │ ── &quot;Quem tem .20?&quot; (broadcast) ───────────────────────────►│
+     │                       (C, D… recebem e ignoram)           │
+     │ ◄──────────────────────── &quot;Sou eu, meu MAC é …&quot; (unicast) ─│
+     │                                                           │
+     │ ══ agora sim: quadro IPv4 com MAC de destino = B ════════►│</code></pre>
+<p>No Wireshark, essas mensagens aparecem como <strong>“Who has
+192.168.0.20? Tell 192.168.0.10”</strong> e <strong>“192.168.0.20 is at
+02:…”</strong>.</p>
+<h1 id="e-se-o-destino-estiver-em-outra-rede">8. E se o destino estiver
+em outra rede?</h1>
+<p>O ARP <strong>só funciona dentro da rede local</strong>, porque o
+broadcast não atravessa roteadores. Então, para acessar um servidor na
+Internet, o computador <strong>não</strong> pergunta pelo MAC do
+servidor. Ele pergunta pelo MAC do <strong>gateway padrão</strong> (o
+roteador da rede local) e entrega o quadro a ele:</p>
+<pre class="text"><code>Destino na mesma rede?
+        │
+   ┌────┴────┐
+  Sim       Não
+   │         │
+   ▼         ▼
+ARP pelo   ARP pelo MAC do
+MAC do     GATEWAY (roteador)
+destino</code></pre>
+<p>É por isso que, no primeiro enlace, o MAC de destino é o do roteador,
+enquanto o IP de destino é o do servidor (seção 4). Como o computador
+decide se o destino está ou não na mesma rede é assunto de endereçamento
+IP, estudado na disciplina INRC230003.</p>
+<h1 id="comandos-úteis">9. Comandos úteis</h1>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ação</th>
+<th>Windows</th>
+<th>Linux</th>
+<th>macOS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ver a tabela ARP</td>
+<td><code>arp -a</code></td>
+<td><code>ip neigh</code> (ou <code>arp -n</code>)</td>
+<td><code>arp -a</code></td>
+</tr>
+<tr class="even">
+<td>Limpar a tabela ARP (requer administrador)</td>
+<td><code>arp -d *</code></td>
+<td><code>sudo ip neigh flush all</code></td>
+<td><code>sudo arp -a -d</code></td>
+</tr>
+<tr class="odd">
+<td>Ver o próprio MAC e IP</td>
+<td><code>ipconfig /all</code></td>
+<td><code>ip addr</code></td>
+<td><code>ifconfig</code></td>
+</tr>
+<tr class="even">
+<td>Ver o gateway padrão</td>
+<td><code>ipconfig</code></td>
+<td><code>ip route</code></td>
+<td><code>netstat -rn</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Nota de segurança:</strong> o ARP não tem nenhuma
+autenticação. Qualquer dispositivo da rede local pode enviar uma
+resposta ARP falsa, alegando ser o gateway, e passar a receber o tráfego
+dos outros (<em>ARP spoofing</em>). Por isso, redes corporativas usam
+proteções nos switches, e o tráfego sensível deve ser sempre
+criptografado.</p>
+</blockquote>
+<hr />
+<h1 class="parte" id="parte-iii-como-o-switch-aprende-e-encaminha">Parte
+III — Como o switch aprende e encaminha</h1>
+<h1 id="switch-ponte-e-transparência">10. Switch, ponte e
+transparência</h1>
+<p>Um <strong>switch</strong> é, na essência, uma <strong>ponte</strong>
+(<em>bridge</em>) com muitas portas. Tanenbaum descreve as pontes como
+dispositivos <strong>transparentes</strong>: os computadores não sabem
+que elas existem, não precisam ser configurados para usá-las, e um
+switch pode ser ligado à rede sem nenhuma configuração prévia (“ligar e
+usar”).</p>
+<p>Para isso, o switch precisa descobrir <strong>sozinho</strong> em
+qual porta está cada computador. Ele usa uma <strong>tabela MAC</strong>
+(também chamada tabela CAM ou de encaminhamento):</p>
+<table>
+<thead>
+<tr class="header">
+<th>MAC</th>
+<th>Porta</th>
+<th>Idade</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>Ao ser ligado, o switch <strong>não conhece ninguém</strong>: a
+tabela começa vazia.</p>
+<h1 id="aprendizado-olhar-a-origem">11. Aprendizado: olhar a origem</h1>
+<p>Considere o switch:</p>
+<pre class="text"><code>          ┌──────────────────────────┐
+          │          SWITCH          │
+          │  P1      P2      P3      │
+          └──┬───────┬───────┬───────┘
+             │       │       │
+            PC A    PC B    PC C</code></pre>
+<p>Quando A transmite um quadro, ele entra pela porta P1. O switch olha
+o <strong>MAC de origem</strong> e conclui: “A está na porta P1”.</p>
+<table>
+<thead>
+<tr class="header">
+<th>MAC</th>
+<th>Porta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Regra fundamental:</strong> o switch <strong>aprende</strong>
+pelo <strong>MAC de origem</strong> e <strong>encaminha</strong> pelo
+<strong>MAC de destino</strong>.</p>
+</blockquote>
+<p>Por que pela origem? Porque o destino diz para onde o quadro
+<strong>quer ir</strong>, e o switch ainda não sabe onde isso fica. Já a
+origem diz, com certeza, <strong>de onde o quadro veio</strong>: o
+remetente está atrás da porta de entrada.</p>
+<h1 id="destino-desconhecido-flooding">12. Destino desconhecido:
+flooding</h1>
+<p>A envia um quadro para B, mas B ainda não está na tabela. O switch
+não sabe para onde mandá-lo, então faz <strong>inundação</strong>
+(<em>flooding</em>): envia o quadro para <strong>todas as portas, exceto
+a de entrada</strong>.</p>
+<pre class="text"><code>          ┌──────────────────────────┐
+          │          SWITCH          │
+          │  P1      P2      P3      │
+          └──┬───────┬───────┬───────┘
+     entrada │       │ cópia │ cópia
+             ▲       ▼       ▼
+            PC A    PC B    PC C
+                    aceita  descarta
+                  (é para   (não é
+                    mim)    para mim)</code></pre>
+<p>B aceita o quadro, porque o destino é o seu MAC. C recebe uma cópia e
+a <strong>descarta</strong> (Encontro 04, seção 13.1).</p>
+<blockquote>
+<p><strong>Flooding ≠ broadcast.</strong> <strong>Broadcast</strong> é
+um tipo de <strong>endereço</strong> (<code>FF:FF:FF:FF:FF:FF</code>)
+escolhido por quem envia. <strong>Flooding</strong> é uma
+<strong>decisão do switch</strong> diante de um destino unicast que ele
+ainda não conhece. O efeito nas portas é parecido, mas a causa é
+diferente: um broadcast é sempre inundado, e um unicast só é inundado
+enquanto o destino for desconhecido.</p>
+</blockquote>
+<h1 id="a-resposta-ensina-o-switch">13. A resposta ensina o switch</h1>
+<p>B responde para A. O quadro entra pela porta P2:</p>
+<pre class="text"><code>Origem:  B     Destino: A     Entrada: P2</code></pre>
+<p>O switch <strong>aprende</strong> que B está em P2 e, como <strong>já
+conhece A</strong>, encaminha a resposta <strong>somente</strong> para
+P1:</p>
+<table>
+<thead>
+<tr class="header">
+<th>MAC</th>
+<th>Porta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>P1</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<p>A partir daqui, a conversa entre A e B não incomoda mais C: cada
+quadro vai direto para a porta certa.</p>
+<h1 id="as-quatro-decisões-do-switch">14. As quatro decisões do
+switch</h1>
+<p>Para cada quadro recebido, o switch faz:</p>
+<pre class="text"><code>                    QUADRO RECEBIDO na porta X
+                               │
+                               ▼
+           1. APRENDER: registrar (MAC de origem → porta X)
+                               │
+                               ▼
+                   Destino é broadcast/multicast?
+                     │                     │
+                    Sim                   Não
+                     │                     ▼
+                     │          Destino está na tabela?
+                     │            │                │
+                     │           Não              Sim
+                     │            │                │
+                     ▼            ▼                ▼
+           4. INUNDAR: todas as portas,     Porta do destino = X?
+              exceto X                        │            │
+                                             Não          Sim
+                                              │            │
+                                              ▼            ▼
+                                2. ENCAMINHAR:     3. FILTRAR:
+                                   só para a          descartar
+                                   porta do           (o destino já
+                                   destino            recebeu)</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operação</th>
+<th>Quando</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Aprendizado</strong> (<em>learning</em>)</td>
+<td>Sempre</td>
+<td>MAC de origem + porta de entrada → tabela</td>
+</tr>
+<tr class="even">
+<td><strong>Encaminhamento</strong> (<em>forwarding</em>)</td>
+<td>Destino conhecido, em outra porta</td>
+<td>Envia só para a porta do destino</td>
+</tr>
+<tr class="odd">
+<td><strong>Filtragem</strong> (<em>filtering</em>)</td>
+<td>Destino conhecido, <strong>na mesma porta de entrada</strong></td>
+<td>Descarta o quadro</td>
+</tr>
+<tr class="even">
+<td><strong>Inundação</strong> (<em>flooding</em>)</td>
+<td>Destino desconhecido, broadcast ou multicast</td>
+<td>Envia para todas as portas, exceto a de entrada</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Quando ocorre a filtragem?</strong> Quando há mais de um
+computador atrás da mesma porta, por exemplo, um <strong>hub</strong>
+antigo ligado a uma porta do switch:</p>
+<pre class="text"><code>            ┌──────────────┐
+            │    SWITCH    │
+            │  P1      P2  │
+            └──┬────────┬──┘
+               │        │
+            ┌──┴──┐    PC C
+            │ HUB │
+            └┬───┬┘
+           PC A PC B</code></pre>
+<p>Se A envia para B, o hub já entregou o quadro a B. O switch recebe
+uma cópia em P1, vê que B também está em P1 e <strong>descarta</strong>
+o quadro, em vez de enviá-lo a C sem necessidade.</p>
+<h1 id="expiração-das-entradas-aging">15. Expiração das entradas
+(<em>aging</em>)</h1>
+<p>As entradas aprendidas não são permanentes. Cada uma tem um
+temporizador, reiniciado sempre que o switch vê um quadro com aquele MAC
+de origem. Se o MAC ficar em silêncio por um certo tempo (<strong>300
+segundos</strong>, por padrão, em muitos switches), a entrada é
+<strong>apagada</strong>.</p>
+<p>Isso permite que a tabela acompanhe a rede:</p>
+<ul>
+<li>um notebook que foi <strong>desligado</strong> ou levado embora sai
+da tabela;</li>
+<li>um computador que <strong>mudou de porta</strong> é reaprendido na
+porta nova assim que transmitir, e a entrada antiga é substituída;</li>
+<li>a tabela, que tem tamanho limitado, não se enche de endereços que
+não existem mais.</li>
+</ul>
+<p>Depois que uma entrada expira, o próximo quadro para aquele destino
+volta a ser <strong>inundado</strong>, até o destino transmitir de
+novo.</p>
+<h1 id="quando-o-switch-encaminha-store-and-forward-cut-through">16.
+Quando o switch encaminha: <em>store-and-forward</em> ×
+<em>cut-through</em></h1>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Modo</th>
+<th>Como funciona</th>
+<th>Vantagem</th>
+<th>Desvantagem</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><em>Store-and-forward</em></strong></td>
+<td>Recebe o quadro <strong>inteiro</strong>, confere o
+<strong>FCS</strong> e só então encaminha</td>
+<td>Quadros com erro são <strong>descartados</strong> no switch</td>
+<td>Mais latência (precisa esperar o quadro inteiro)</td>
+</tr>
+<tr class="even">
+<td><strong><em>Cut-through</em></strong></td>
+<td>Começa a encaminhar assim que lê o <strong>MAC de destino</strong>
+(os primeiros 6 bytes)</td>
+<td>Latência mínima</td>
+<td>Quadros com erro são repassados adiante</td>
+</tr>
+</tbody>
+</table>
+<p>É aqui que faz diferença o MAC de destino ser o
+<strong>primeiro</strong> campo do quadro (Encontro 04, seção 14). A
+maioria dos switches de acesso usa <em>store-and-forward</em>; o
+<em>cut-through</em> aparece em ambientes que exigem latência muito
+baixa, como alguns datacenters.</p>
+<h1 id="uma-porta-vários-macs">17. Uma porta, vários MACs</h1>
+<p>Quando dois switches são interligados, a porta que leva ao outro
+switch aprende <strong>todos</strong> os MACs que estão do outro
+lado:</p>
+<pre class="text"><code>         ┌──────────────────────┐
+         │         SW1          │
+         │  P1    P2    P3      │
+         └──┬─────┬─────┬───────┘
+            │     │     │
+            A     B     │
+                        │ P1 (porta de SW2 ligada a SW1)
+               ┌────────┴─────────┐
+               │       SW2        │
+               │     P2     P3    │
+               └─────┬──────┬─────┘
+                     │      │
+                     C      D</code></pre>
+<p>Na tabela de SW1, <strong>C e D aparecem na porta P3</strong>, porque
+é por ela que os quadros deles chegam. Cada switch <strong>aprende de
+forma independente</strong>, só com o que vê nas próprias portas, sem
+trocar tabelas com os outros switches.</p>
+<hr />
+<h1 class="parte" id="parte-iv-domínios-loops-e-vlans">Parte IV —
+Domínios, loops e VLANs</h1>
+<h1 id="domínios-de-colisão-e-de-broadcast">18. Domínios de colisão e de
+broadcast</h1>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Equipamento</th>
+<th>Camada</th>
+<th>Domínios de colisão</th>
+<th>Domínios de broadcast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Hub</strong></td>
+<td>1</td>
+<td><strong>Um só</strong> para todas as portas</td>
+<td>Um</td>
+</tr>
+<tr class="even">
+<td><strong>Switch</strong></td>
+<td>2</td>
+<td><strong>Um por porta</strong> (e nenhuma colisão em
+full-duplex)</td>
+<td><strong>Um</strong> por VLAN; o broadcast vai a todas as portas da
+VLAN</td>
+</tr>
+<tr class="odd">
+<td><strong>Roteador</strong></td>
+<td>3</td>
+<td>Um por porta</td>
+<td><strong>Um por interface</strong>: o roteador <strong>não</strong>
+repassa broadcasts</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>           ROTEADOR
+          ╱        ╲
+     SWITCH 1    SWITCH 2
+     ╱  │  ╲      ╱  │  ╲
+    A   B   C    D   E   F
+
+Domínios de colisão:  um por porta (cada enlace)
+Domínios de broadcast: 2  →  {A, B, C} e {D, E, F}</code></pre>
+<p>Um broadcast de A (como uma requisição ARP) chega a B e C, mas
+<strong>para no roteador</strong>. É por isso que o ARP só resolve
+endereços da rede local (seção 8).</p>
+<h1 id="loops-entre-switches">19. Loops entre switches</h1>
+<p>Para aumentar a disponibilidade, é comum ligar switches com caminhos
+<strong>redundantes</strong>: se um cabo se romper, há outro
+caminho.</p>
+<pre class="text"><code>             SWITCH A
+             ╱      ╲
+            ╱        ╲
+      SWITCH B ───── SWITCH C</code></pre>
+<p>Mas, em camada 2, um ciclo é desastroso. Siga um único broadcast
+enviado por um computador ligado a A:</p>
+<pre class="text"><code>1. A inunda o broadcast para B e para C.
+2. B inunda para C; C inunda para B.
+3. C reenvia a cópia que veio de B para A; B reenvia a de C para A.
+4. A inunda tudo de novo para B e C...
+   → as cópias circulam e se multiplicam PARA SEMPRE.</code></pre>
+<p>Diferentemente do pacote IP, que tem o campo <strong>TTL</strong> e é
+descartado após um número máximo de saltos, o quadro Ethernet
+<strong>não tem nenhum campo que limite saltos</strong>. As
+consequências:</p>
+<ul>
+<li><strong>Tempestade de broadcast</strong> (<em>broadcast storm</em>):
+em segundos, os enlaces ficam saturados e a rede para.</li>
+<li><strong>Quadros duplicados</strong> entregues aos computadores.</li>
+<li><strong>Instabilidade da tabela MAC</strong> (<em>MAC
+flapping</em>): o switch vê o mesmo MAC de origem chegando ora por uma
+porta, ora por outra, e reaprende sem parar.</li>
+</ul>
+<h1 id="spanning-tree-protocol-stp">20. Spanning Tree Protocol
+(STP)</h1>
+<p>O <strong>STP</strong> (IEEE 802.1D), criado por Radia Perlman,
+mantém os cabos redundantes ligados, mas <strong>bloqueia
+logicamente</strong> as portas necessárias para que a topologia ativa
+seja uma <strong>árvore</strong>: um grafo que liga todos os switches
+<strong>sem nenhum ciclo</strong>.</p>
+<pre class="text"><code>             SWITCH A  (raiz)
+             ╱      ╲
+            ╱        ╲
+      SWITCH B - - X - SWITCH C
+              porta bloqueada</code></pre>
+<p>Em linhas gerais:</p>
+<ol type="1">
+<li>Os switches trocam mensagens de controle (<strong>BPDUs</strong>) e
+elegem uma <strong>ponte raiz</strong>: a de menor identificador
+(prioridade + MAC).</li>
+<li>Cada switch escolhe sua <strong>porta raiz</strong>: a de menor
+custo até a raiz.</li>
+<li>Em cada enlace, uma porta é escolhida para encaminhar; as portas que
+fechariam ciclos ficam <strong>bloqueadas</strong>.</li>
+<li>Se um enlace ativo falhar, o STP <strong>recalcula</strong> a árvore
+e desbloqueia um caminho alternativo.</li>
+</ol>
+<p>O STP original pode levar de 30 a 50 segundos para convergir. Hoje se
+usa a versão rápida, o <strong>RSTP</strong> (IEEE 802.1w), que reage em
+poucos segundos ou menos.</p>
+<h1 id="vlans-introdução">21. VLANs — introdução</h1>
+<p>Uma <strong>VLAN</strong> (<em>Virtual LAN</em>) divide
+<strong>logicamente</strong> um mesmo conjunto de switches em várias
+redes locais independentes.</p>
+<pre class="text"><code>                       SWITCH
+       ┌──────────┬──────────┬──────────┐
+       │          │          │          │
+      PC A       PC B       PC C       PC D
+    VLAN 10    VLAN 10    VLAN 20    VLAN 20
+    (Adm.)     (Adm.)     (Fin.)     (Fin.)</code></pre>
+<ul>
+<li>Cada VLAN é um <strong>domínio de broadcast separado</strong>: um
+ARP de A chega a B, mas não a C nem a D.</li>
+<li>O switch só aprende, encaminha e inunda <strong>dentro da mesma
+VLAN</strong>. A seção 12 dizia “todas as portas, exceto a de entrada”;
+com VLANs, a regra é “todas as portas <strong>da mesma VLAN</strong>,
+exceto a de entrada”.</li>
+<li>A comunicação <strong>entre</strong> VLANs precisa passar por um
+<strong>roteador</strong> (ou por um switch de camada 3).</li>
+<li>Para levar várias VLANs por um mesmo cabo entre switches (porta
+<strong>tronco</strong>), o quadro recebe uma <strong>marca</strong>
+(<em>tag</em>) de 4 bytes definida pelo padrão <strong>IEEE
+802.1Q</strong>, que identifica a VLAN.</li>
+</ul>
+<p>Vantagens: separar setores (segurança), reduzir o alcance dos
+broadcasts (desempenho) e reorganizar a rede sem mudar cabos
+(flexibilidade).</p>
+<hr />
+<h1 class="parte" id="parte-v-exemplo-completo">Parte V — Exemplo
+completo</h1>
+<h1 id="um-ping-em-uma-rede-com-switch">22. Um ping em uma rede com
+switch</h1>
+<p>Quatro computadores estão ligados a um switch recém-ligado, com a
+tabela MAC <strong>vazia</strong> e todas as tabelas ARP
+<strong>vazias</strong>.</p>
+<pre class="text"><code>              ┌────────────────────────────┐
+              │           SWITCH           │
+              │  P1    P2     P3     P4    │
+              └──┬─────┬──────┬──────┬─────┘
+                 │     │      │      │
+                 A     B      C      D
+           .10        .20    .30    .40      (final do IP 192.168.0.x)</code></pre>
+<p>O usuário de A digita <code>ping 192.168.0.20</code>.</p>
+<h2 id="etapa-1-a-envia-uma-requisição-arp-broadcast">Etapa 1 — A envia
+uma requisição ARP (broadcast)</h2>
+<p>“Quem tem 192.168.0.20?” — destino
+<code>FF:FF:FF:FF:FF:FF</code>.</p>
+<ul>
+<li>O switch <strong>aprende A → P1</strong>.</li>
+<li>O destino é broadcast: <strong>inunda</strong> para P2, P3 e
+P4.</li>
+<li>B reconhece o próprio IP; C e D descartam a mensagem.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>MAC</th>
+<th>Porta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="etapa-2-b-responde-ao-arp-unicast-para-a">Etapa 2 — B responde
+ao ARP (unicast para A)</h2>
+<p>“192.168.0.20 está em B.”</p>
+<ul>
+<li>O switch <strong>aprende B → P2</strong>.</li>
+<li>A é conhecido: <strong>encaminha só para P1</strong>.</li>
+<li>A guarda “192.168.0.20 → MAC de B” na tabela ARP.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>MAC</th>
+<th>Porta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>P1</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="etapa-3-a-envia-o-ping-icmp-unicast-para-b">Etapa 3 — A envia o
+ping (ICMP, unicast para B)</h2>
+<p>Agora A tem o MAC de B e monta o quadro IPv4.</p>
+<ul>
+<li>O switch já conhece B: <strong>encaminha só para P2</strong>. Nenhum
+flooding.</li>
+</ul>
+<h2 id="etapa-4-b-responde-ao-ping-unicast-para-a">Etapa 4 — B responde
+ao ping (unicast para A)</h2>
+<ul>
+<li>O switch <strong>encaminha só para P1</strong>. (B não precisou de
+ARP: aprendeu o MAC de A na etapa 1.)</li>
+</ul>
+<h2 id="etapa-5-d-envia-um-broadcast">Etapa 5 — D envia um
+broadcast</h2>
+<ul>
+<li>O switch <strong>aprende D → P4</strong> e <strong>inunda</strong>
+para P1, P2 e P3.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>MAC</th>
+<th>Porta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>P1</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>P2</td>
+</tr>
+<tr class="odd">
+<td>D</td>
+<td>P4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>C ainda não está na tabela</strong>, porque ainda não
+transmitiu nada. Se alguém enviar um quadro unicast para C agora, haverá
+flooding.</p>
+<p><strong>Conclusões:</strong></p>
+<ul>
+<li>Um único <code>ping</code> já faz o switch aprender os dois
+participantes, graças ao ARP.</li>
+<li><strong>Aprender a origem</strong> e <strong>encaminhar para o
+destino</strong> são operações diferentes.</li>
+<li>O switch só conhece quem <strong>já transmitiu</strong>.</li>
+</ul>
+<hr />
+<h1 class="parte" id="parte-vi-prática">Parte VI — Prática</h1>
+<h1 id="wireshark-capturando-o-arp-de-verdade">23. Wireshark —
+capturando o ARP de verdade</h1>
+<p><strong>Objetivo:</strong> observar uma troca ARP real e os campos do
+quadro Ethernet.<br />
+<strong>Tempo previsto:</strong> cerca de 20 minutos.<br />
+<strong>Você vai precisar:</strong> do Wireshark instalado e de
+permissão de administrador. Se o computador do laboratório não permitir,
+acompanhe a <strong>demonstração</strong> em sala e responda às perguntas
+do mesmo jeito.</p>
+<ol type="1">
+<li>Descubra o <strong>IP do gateway padrão</strong> da sua rede
+(<code>ipconfig</code> no Windows, <code>ip route</code> no Linux).</li>
+<li>Veja a tabela ARP atual: <code>arp -a</code>. Anote se o gateway já
+aparece.</li>
+<li><strong>Limpe</strong> a tabela ARP (seção 9).</li>
+<li>Abra o Wireshark, inicie a captura na interface ativa (cabo ou
+Wi-Fi) e digite <code>arp</code> no <strong>filtro de
+exibição</strong>.</li>
+<li>Faça <code>ping</code> para o IP do gateway.</li>
+<li>Pare a captura e localize as mensagens <strong>“Who has…?”</strong>
+e <strong>“…is at…”</strong>.</li>
+<li>Rode <code>arp -a</code> de novo e compare com o passo 2.</li>
+<li>Troque o filtro para <code>icmp</code> e abra um quadro do
+ping.</li>
+</ol>
+<blockquote>
+<p>Se nenhuma mensagem ARP aparecer, o sistema pode ter reaprendido o
+endereço antes de a captura começar. Repita os passos 3 a 5 com a
+captura já em andamento.</p>
+</blockquote>
+<p><strong>Perguntas para o roteiro:</strong></p>
+<ol type="1">
+<li>Na requisição ARP, qual é o <strong>MAC de destino</strong> do
+quadro Ethernet? Por quê?</li>
+<li>Qual é o valor do campo <strong>EtherType</strong> na mensagem ARP?
+E no quadro do ping?</li>
+<li>Na requisição, qual é o “MAC alvo” dentro da mensagem ARP? Por que
+tem esse valor?</li>
+<li>A resposta ARP foi enviada em broadcast ou em unicast? Para qual
+MAC?</li>
+<li>Que nome de fabricante o Wireshark mostra ao lado dos MACs? De onde
+vem essa informação?</li>
+<li>Na tabela ARP, o que mudou entre os passos 2 e 7?</li>
+<li>Se, em vez do gateway, você pingasse um site da Internet, por qual
+MAC o seu computador perguntaria?</li>
+<li>Um switch entre o seu computador e o gateway, depois dessa troca,
+teria aprendido quais endereços?</li>
+</ol>
+<h1 id="atividade-você-é-o-switch">24. Atividade: Você é o switch!</h1>
+<p><strong>Objetivo:</strong> simular as decisões de um switch
+Ethernet.<br />
+<strong>Como fazer:</strong> em grupo de quatro ou cinco colegas. Uma
+pessoa faz o papel do switch e mantém a <strong>tabela MAC</strong> no
+quadro ou em uma folha; as outras são os computadores A, B, C e D, e
+cada uma “envia” quadros escritos em papel com origem e destino.<br />
+<strong>Tempo previsto:</strong> cerca de 15 minutos para as rodadas
+1–6; termine as rodadas 7–9 em casa.</p>
+<p>O switch tem <strong>cinco portas</strong>: A está em P1, B em P2, C
+em P3, D em P4, e P5 está livre.</p>
+<pre class="text"><code>              ┌──────────────────────────────────┐
+              │              SWITCH              │
+              │  P1     P2     P3     P4     P5  │
+              └──┬──────┬──────┬──────┬──────────┘
+                 │      │      │      │
+                 A      B      C      D</code></pre>
+<p><strong>Condição inicial:</strong> tabela MAC vazia.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Rodada</th>
+<th>Origem</th>
+<th>Destino</th>
+<th>Observação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>A</td>
+<td>C</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>C</td>
+<td>A</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>B</td>
+<td>D</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>A</td>
+<td>B</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>D</td>
+<td>A</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>C</td>
+<td>Broadcast</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>B</td>
+<td>A</td>
+<td><strong>B foi desconectado de P2 e ligado em P5</strong></td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>C</td>
+<td>B</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>A</td>
+<td>D</td>
+<td><strong>Passaram-se 6 minutos em que D não transmitiu
+nada</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Para cada rodada, registrem:</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Rodada</th>
+<th>Porta de entrada</th>
+<th>MAC aprendido (ou atualizado)</th>
+<th>Destino conhecido?</th>
+<th>Operação</th>
+<th>Portas de saída</th>
+<th>Tabela após a rodada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Discussão:</strong></p>
+<ul>
+<li>Por que o switch precisou fazer flooding nas primeiras rodadas?</li>
+<li>A partir de que rodada a tabela ficou completa? O flooding
+acabou?</li>
+<li>Por que o broadcast da rodada 6 foi distribuído mesmo com a tabela
+completa?</li>
+<li>O que o switch fez com a entrada de B na rodada 7? E se B não
+tivesse transmitido nada depois de mudar de porta?</li>
+<li>O que aconteceu na rodada 9? Por que isso é útil, e não um
+defeito?</li>
+</ul>
+<hr />
+<h1 class="parte" id="parte-vii-exercícios-de-fixação">Parte VII —
+Exercícios de fixação</h1>
+<h1 id="questões-conceituais">25. Questões conceituais</h1>
+<ol type="1">
+<li>Por que a troca do hub pelo switch mudou o comportamento da
+Ethernet, enquanto a troca do barramento pelo hub mudou apenas a
+topologia física?</li>
+<li>Diferencie endereço MAC e endereço IP quanto à camada, ao alcance e
+a quem os usa para encaminhar.</li>
+<li>Qual é a função do EtherType? Qual o valor para ARP e para
+IPv4?</li>
+<li>Explique as duas mensagens do ARP. Por que a requisição é broadcast
+e a resposta é unicast?</li>
+<li>Para que serve a tabela ARP? Por que suas entradas expiram?</li>
+<li>Para acessar um site na Internet, o computador pergunta, via ARP,
+pelo MAC de quem? Por quê?</li>
+<li>Por que o switch aprende pelo MAC de <strong>origem</strong>, e não
+pelo de destino?</li>
+<li>O que acontece quando o destino unicast não está na tabela MAC?</li>
+<li>Diferencie flooding e broadcast.</li>
+<li>Em que situação um switch <strong>filtra</strong> (descarta) um
+quadro com destino conhecido?</li>
+<li>Por que as entradas dinâmicas da tabela MAC expiram? O que acontece
+com o próximo quadro para um destino cuja entrada expirou?</li>
+<li>Um switch conhece todos os MACs assim que é ligado? Justifique.</li>
+<li>Compare <em>store-and-forward</em> e <em>cut-through</em>.</li>
+<li>Diferencie domínio de colisão e domínio de broadcast. Quantos de
+cada existem na rede da seção 18?</li>
+<li>Por que um loop é muito mais grave em camada 2 do que em camada
+3?</li>
+<li>Explique a ideia geral do STP. O que acontece se o enlace ativo
+falhar?</li>
+<li>Como VLANs segmentam uma rede? O que é necessário para dois
+computadores em VLANs diferentes se comunicarem?</li>
+<li>Por que o ARP é vulnerável a ataques? Que tipo de proteção pode ser
+usada?</li>
+</ol>
+<h1 id="questão-de-análise-dois-switches">26. Questão de análise — dois
+switches</h1>
+<p>Use a topologia da seção 17 (A e B em SW1; C e D em SW2; SW1-P3
+ligada a SW2-P1). As tabelas de SW1 e SW2 estão vazias. O computador A
+envia um quadro <strong>unicast</strong> para D.</p>
+<ol type="1">
+<li>Qual entrada SW1 aprenderá? O que SW1 fará com o quadro?</li>
+<li>Qual entrada SW2 aprenderá? Em que porta? O que SW2 fará com o
+quadro?</li>
+<li>Quais computadores receberam uma cópia do quadro?</li>
+<li>D responde para A. Descreva o que cada switch aprende e faz.</li>
+<li>Como ficam as duas tabelas após a resposta?</li>
+<li>Agora B envia um quadro para D. Haverá flooding em SW1? E em
+SW2?</li>
+</ol>
+<p><strong>Ponto central:</strong> cada switch aprende de forma
+independente, a partir das portas pelas quais recebe os quadros.</p>
+<h1 id="questão-de-análise-arp-e-switch">27. Questão de análise — ARP e
+switch</h1>
+<p>Na rede da seção 22, com todas as tabelas vazias, <strong>C</strong>
+faz <code>ping 192.168.0.40</code> (computador D).</p>
+<ol type="1">
+<li>Liste, em ordem, os quadros trocados (ARP e ICMP), indicando para
+cada um: origem, destino, tipo (broadcast ou unicast) e EtherType.</li>
+<li>Para cada quadro, indique o que o switch aprende e por quais portas
+o quadro sai.</li>
+<li>Ao final, quais computadores aparecem na tabela MAC do switch? Quais
+aparecem na tabela ARP de C?</li>
+</ol>
+<hr />
+<h1 class="parte" id="parte-viii-síntese">Parte VIII — Síntese</h1>
+<h1 id="revisão-dos-principais-conceitos">28. Revisão dos principais
+conceitos</h1>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pergunta</th>
+<th>Resposta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Como descobrir o MAC de quem tem um IP?</td>
+<td><strong>ARP</strong>: requisição em broadcast, resposta em unicast,
+cache local</td>
+</tr>
+<tr class="even">
+<td>E se o destino estiver em outra rede?</td>
+<td>ARP pelo MAC do <strong>gateway</strong></td>
+</tr>
+<tr class="odd">
+<td>Como o switch descobre onde está cada MAC?</td>
+<td><strong>Aprendizado</strong> pelo MAC de
+<strong>origem</strong></td>
+</tr>
+<tr class="even">
+<td>E se o destino ainda não for conhecido?</td>
+<td><strong>Flooding</strong>, até o destino transmitir</td>
+</tr>
+<tr class="odd">
+<td>E se o computador sair ou mudar de porta?</td>
+<td><strong>Aging</strong> e reaprendizado</td>
+</tr>
+<tr class="even">
+<td>Por que caminhos redundantes são perigosos?</td>
+<td><strong>Loops</strong>: tempestades de broadcast, sem TTL para
+conter</td>
+</tr>
+<tr class="odd">
+<td>Como ter redundância sem loops?</td>
+<td><strong>STP / RSTP</strong></td>
+</tr>
+<tr class="even">
+<td>Como separar setores no mesmo switch?</td>
+<td><strong>VLANs</strong>: um domínio de broadcast por VLAN</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>                  QUADRO RECEBIDO na porta X
+                             │
+                             ▼
+                 APRENDE: origem → porta X
+                             │
+                             ▼
+                     Consulta o destino
+                             │
+          ┌──────────────────┼──────────────────┐
+          │                  │                  │
+   Desconhecido ou       Conhecido,         Conhecido,
+     broadcast          em outra porta    na própria porta X
+          │                  │                  │
+          ▼                  ▼                  ▼
+       INUNDA            ENCAMINHA            FILTRA</code></pre>
+<blockquote>
+<p><strong>Para fixar:</strong> repare na ligação entre o ARP e o
+aprendizado do switch — a requisição ARP em broadcast é inundada e
+“apresenta” o remetente ao switch; a resposta em unicast apresenta o
+destinatário.</p>
+</blockquote>
+<h1 id="para-o-próximo-encontro">29. Próximos passos</h1>
+<p>Nas próximas etapas da disciplina, vale aprofundar as
+<strong>VLANs</strong> e ir ao <strong>Packet Tracer</strong> ver tudo
+isso acontecer:</p>
+<ul>
+<li>separar computadores em <strong>VLANs</strong> e observar até onde o
+broadcast chega;</li>
+<li>acompanhar a tabela MAC, agora organizada <strong>por VLAN</strong>,
+com <code>show mac address-table</code>;</li>
+<li>ligar dois switches por um <strong>trunk</strong> e ver a marcação
+802.1Q nos quadros;</li>
+<li>como desafio, ligar <strong>três switches em triângulo</strong> e
+descobrir o que o STP faz com o enlace redundante.</li>
+</ul>
+<blockquote>
+<p><strong>Pergunta para levar:</strong> se o STP bloqueia um dos cabos,
+a redundância não foi desperdiçada? Que vantagem continua existindo?</p>
+</blockquote>
+<p>E não esqueça a pergunta guardada para quando estudarmos as redes
+sem fio: <em>no Wi-Fi, por que não dá para detectar a colisão
+enquanto se transmite?</em></p>
+<h2 id="continuidade-da-disciplina">Continuidade da disciplina</h2>
+<pre class="text"><code>Encontro 03 → Camada física: meios de transmissão e redes sem fio
+Encontro 04 → Enlace: quadros, erros e acesso ao meio
+Encontro 05 → Ethernet, ARP e comutação de quadros            ← hoje
+Próximas etapas → VLANs e segmentação; Wi-Fi e redes sem fio</code></pre>
+<hr />
+<h1 id="referências">Referências</h1>
+<p>TANENBAUM, Andrew S.; WETHERALL, David J. <strong>Computer
+Networks</strong>. 5. ed. Boston: Prentice Hall, 2011.</p>
+<ul>
+<li><strong>Capítulo 4 — The Medium Access Control Sublayer:</strong>
+Ethernet clássica e comutada; formato do quadro; pontes transparentes
+(aprendizado, encaminhamento, inundação); <em>spanning tree</em>;
+repetidores, hubs, pontes, switches, roteadores; VLANs.</li>
+<li><strong>Capítulo 5 — The Network Layer:</strong> protocolo ARP
+(seção de protocolos de controle da Internet).</li>
+</ul>
+<p>KUROSE, James F.; ROSS, Keith W. <strong>Redes de computadores e a
+Internet: uma abordagem top-down</strong>. São Paulo: Pearson. (Capítulo
+sobre a camada de enlace: endereçamento de camada de enlace e ARP,
+Ethernet, switches, VLANs.)</p>
+<p>PLUMMER, David C. <strong>RFC 826 — An Ethernet Address Resolution
+Protocol</strong>. IETF, 1982.</p>
+  </article>
+</main>
+</div>
+<button class="menu-btn" id="menuBtn" aria-label="Abrir sumário">☰ Sumário</button>
+<script>
+(function(){
+  document.querySelectorAll('article table').forEach(function(t){
+    var w=document.createElement('div'); w.className='table-wrap';
+    t.parentNode.insertBefore(w,t); w.appendChild(t);
+  });
+  document.querySelectorAll('article h1.parte').forEach(function(h){
+    var a=document.querySelector('aside a[href="#'+h.id+'"]'); if(a) a.parentNode.classList.add('parte-item');
+  });
+  var toc=document.getElementById('toc'), btn=document.getElementById('menuBtn');
+  btn.addEventListener('click',function(){toc.classList.toggle('open')});
+  toc.addEventListener('click',function(e){ if(e.target.tagName==='A') toc.classList.remove('open') });
+  var links=[].slice.call(toc.querySelectorAll('a'));
+  var map={}; links.forEach(function(a){ map[decodeURIComponent(a.getAttribute('href').slice(1))]=a });
+  var heads=[].slice.call(document.querySelectorAll('article h1[id]'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){l.classList.remove('active')});
+          var a=map[e.target.id]; if(a){a.classList.add('active');
+            if(window.innerWidth>900){
+              var top=a.offsetTop, h=toc.clientHeight;
+              if(top<toc.scrollTop+60 || top>toc.scrollTop+h-60) toc.scrollTop=top-h/3;
+            }}
+        }
+      });
+    },{rootMargin:'0px 0px -75% 0px'});
+    heads.forEach(function(h){io.observe(h)});
+  }
+})();
+</script>
+</body>
+</html>

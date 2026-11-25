@@ -1,0 +1,1831 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encontro 04 — Camada de Enlace</title>
+<style>
+:root{
+  --bg:#f7f5f0; --paper:#ffffff; --ink:#1d2330; --muted:#5d6676;
+  --line:#e3dfd6; --accent:#0f6e8c; --accent-soft:#e3f1f5;
+  --warm:#b45f1e; --warm-soft:#fbefe4; --code-bg:#f3f1ec;
+  --side:#fbfaf7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+    --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+    --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+  --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+  --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:16px}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.65 "Source Serif 4","Iowan Old Style",Georgia,serif;}
+.layout{display:grid; grid-template-columns:290px minmax(0,1fr); min-height:100vh}
+aside{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--side);
+  border-right:1px solid var(--line); padding:28px 20px 40px;
+  font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+aside .brand{font-weight:700; letter-spacing:.04em; font-size:12px; color:var(--accent);
+  text-transform:uppercase; margin-bottom:4px}
+aside .brand-sub{color:var(--muted); font-size:13px; margin-bottom:20px}
+aside ul{list-style:none; margin:0; padding:0}
+aside ul ul{padding-left:12px; display:none}
+aside li a{display:block; padding:4px 8px; border-radius:6px; color:var(--ink);
+  text-decoration:none}
+aside li a:hover{background:var(--accent-soft)}
+aside li a.active{background:var(--accent-soft); color:var(--accent); font-weight:600}
+main{padding:48px 24px 96px}
+article{max-width:780px; margin:0 auto}
+header.hero{max-width:780px; margin:0 auto 36px; padding-bottom:28px; border-bottom:2px solid var(--ink)}
+.hero .code{font:600 13px/1 system-ui,sans-serif; letter-spacing:.08em; color:var(--accent);
+  text-transform:uppercase}
+.hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.15; margin:12px 0 10px; font-weight:700}
+.hero .meta{font:14px system-ui,sans-serif; color:var(--muted)}
+.hero .meta b{color:var(--ink)}
+h1,h2,h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.25}
+article h1{font-size:26px; margin:64px 0 16px; padding-top:8px}
+article h2{font-size:20px; margin:40px 0 12px; color:var(--accent)}
+article h3{font-size:17px; margin:28px 0 8px}
+article h1.parte{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--warm);
+  margin:72px 0 -36px; padding:0; border-top:2px solid var(--warm); padding-top:10px}
+aside li.parte-item > a{margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--warm); font-weight:700}
+aside li.parte-item > a:hover{background:transparent}
+hr{display:none}
+a{color:var(--accent)}
+strong{font-weight:650}
+blockquote{margin:24px 0; padding:14px 18px; background:var(--warm-soft);
+  border-left:4px solid var(--warm); border-radius:0 8px 8px 0}
+blockquote p{margin:.3em 0}
+pre{background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:16px 18px; overflow-x:auto; font:13.5px/1.4 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.9em}
+p code,li code{background:var(--code-bg); padding:1px 5px; border-radius:4px}
+.table-wrap{overflow-x:auto; margin:20px 0}
+table{border-collapse:collapse; width:100%; font:14.5px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+th,td{padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+thead th{background:var(--accent-soft); color:var(--ink); font-weight:650; border-bottom:2px solid var(--accent)}
+tbody tr:hover{background:var(--accent-soft)}
+li{margin:4px 0}
+math[display="block"]{margin:18px 0; font-size:1.15em; overflow-x:auto}
+.menu-btn{display:none}
+@media (max-width:900px){
+  .layout{display:block}
+  aside{position:fixed; inset:0 auto 0 0; width:82%; max-width:320px; z-index:20;
+    transform:translateX(-100%); transition:transform .2s; box-shadow:0 0 30px rgba(0,0,0,.25)}
+  aside.open{transform:none}
+  .menu-btn{display:block; position:fixed; right:16px; bottom:16px; z-index:30;
+    background:var(--accent); color:#fff; border:0; border-radius:999px; padding:12px 18px;
+    font:600 14px system-ui,sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.2)}
+  main{padding:28px 16px 80px}
+}
+@media print{
+  aside,.menu-btn{display:none}
+  .layout{display:block}
+  body{background:#fff; font-size:12pt}
+  pre,table,blockquote{break-inside:avoid}
+  article h1{break-before:page; margin-top:0}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside id="toc">
+  <div class="brand">INRC230002</div>
+  <div class="brand-sub">Redes de Computadores: Acesso à Rede</div>
+  <ul>
+  <li><a href="#parte-i-da-camada-física-à-camada-de-enlace"
+  id="toc-parte-i-da-camada-física-à-camada-de-enlace">PARTE I — DA
+  CAMADA FÍSICA À CAMADA DE ENLACE</a></li>
+  <li><a href="#da-camada-física-à-camada-de-enlace"
+  id="toc-da-camada-física-à-camada-de-enlace">1. Da camada física à
+  camada de enlace</a></li>
+  <li><a href="#o-que-é-um-quadro" id="toc-o-que-é-um-quadro">2. O que é
+  um quadro?</a></li>
+  <li><a href="#enquadramento-framing" id="toc-enquadramento-framing">3.
+  Enquadramento (<em>framing</em>)</a></li>
+  <li><a href="#parte-ii-erros" id="toc-parte-ii-erros">PARTE II —
+  ERROS</a></li>
+  <li><a href="#por-que-erros-ocorrem" id="toc-por-que-erros-ocorrem">4.
+  Por que erros ocorrem?</a></li>
+  <li><a href="#redundância-o-princípio-dos-códigos"
+  id="toc-redundância-o-princípio-dos-códigos">5. Redundância: o
+  princípio dos códigos</a></li>
+  <li><a href="#bit-de-paridade" id="toc-bit-de-paridade">6. Bit de
+  paridade</a></li>
+  <li><a href="#checksum" id="toc-checksum">7. Checksum</a></li>
+  <li><a href="#crc-verificação-de-redundância-cíclica"
+  id="toc-crc-verificação-de-redundância-cíclica">8. CRC — Verificação
+  de Redundância Cíclica</a></li>
+  <li><a href="#detecção-versus-correção-de-erros"
+  id="toc-detecção-versus-correção-de-erros">9. Detecção versus correção
+  de erros</a></li>
+  <li><a href="#controle-de-fluxo-e-retransmissão"
+  id="toc-controle-de-fluxo-e-retransmissão">10. Controle de fluxo e
+  retransmissão</a></li>
+  <li><a href="#parte-iii-endereçamento-para-quem-é-o-quadro"
+  id="toc-parte-iii-endereçamento-para-quem-é-o-quadro">PARTE III —
+  ENDEREÇAMENTO: PARA QUEM É O QUADRO?</a></li>
+  <li><a href="#subcamadas-llc-e-mac" id="toc-subcamadas-llc-e-mac">11.
+  Subcamadas LLC e MAC</a></li>
+  <li><a href="#endereços-mac" id="toc-endereços-mac">12. Endereços
+  MAC</a></li>
+  <li><a href="#unicast-broadcast-e-multicast"
+  id="toc-unicast-broadcast-e-multicast">13. Unicast, broadcast e
+  multicast</a></li>
+  <li><a href="#juntando-tudo-o-quadro-ethernet"
+  id="toc-juntando-tudo-o-quadro-ethernet">14. Juntando tudo: o quadro
+  Ethernet</a></li>
+  <li><a href="#parte-iv-acesso-ao-meio-quem-fala-e-quando"
+  id="toc-parte-iv-acesso-ao-meio-quem-fala-e-quando">PARTE IV — ACESSO
+  AO MEIO: QUEM FALA, E QUANDO?</a></li>
+  <li><a href="#o-problema-do-meio-compartilhado"
+  id="toc-o-problema-do-meio-compartilhado">15. O problema do meio
+  compartilhado</a></li>
+  <li><a href="#colisões" id="toc-colisões">16. Colisões</a></li>
+  <li><a href="#aloha-uma-solução-histórica"
+  id="toc-aloha-uma-solução-histórica">17. ALOHA: uma solução
+  histórica</a></li>
+  <li><a href="#csma-carrier-sense-multiple-access"
+  id="toc-csma-carrier-sense-multiple-access">18. CSMA — Carrier Sense
+  Multiple Access</a></li>
+  <li><a href="#csmacd-collision-detection"
+  id="toc-csmacd-collision-detection">19. CSMA/CD — Collision
+  Detection</a></li>
+  <li><a href="#half-duplex-e-full-duplex"
+  id="toc-half-duplex-e-full-duplex">20. Half-duplex e
+  full-duplex</a></li>
+  <li><a href="#do-hub-ao-switch-ao-roteador"
+  id="toc-do-hub-ao-switch-ao-roteador">21. Do hub ao switch ao
+  roteador</a></li>
+  <li><a href="#prévia-e-no-wi-fi" id="toc-prévia-e-no-wi-fi">22.
+  Prévia: e no Wi-Fi?</a></li>
+  <li><a href="#integração-dos-conceitos"
+  id="toc-integração-dos-conceitos">23. Integração dos
+  conceitos</a></li>
+  <li><a href="#prática" id="toc-prática">PRÁTICA</a></li>
+  <li><a href="#packet-tracer-meio-compartilhado-enlaces-dedicados"
+  id="toc-packet-tracer-meio-compartilhado-enlaces-dedicados">24. Packet
+  Tracer — Meio compartilhado × enlaces dedicados</a></li>
+  <li><a href="#atividade-conceitual-como-compartilhar-o-canal"
+  id="toc-atividade-conceitual-como-compartilhar-o-canal">25. Atividade
+  conceitual — Como compartilhar o canal?</a></li>
+  <li><a href="#exercícios-de-fixação"
+  id="toc-exercícios-de-fixação">26. Exercícios de fixação</a></li>
+  <li><a href="#questões-para-discussão"
+  id="toc-questões-para-discussão">27. Questões para discussão</a></li>
+  <li><a href="#síntese-do-encontro" id="toc-síntese-do-encontro">28.
+  Síntese do encontro</a></li>
+  <li><a href="#para-o-próximo-encontro"
+  id="toc-para-o-próximo-encontro">29. Para o próximo encontro</a></li>
+  <li><a href="#referências-e-correspondência-com-a-obra-base"
+  id="toc-referências-e-correspondência-com-a-obra-base">Referências</a></li>
+  </ul>
+</aside>
+<main>
+  <header class="hero">
+    <div class="code">INRC230002 · Encontro 04</div>
+    <h1>Camada de Enlace: Quadros, Erros e Acesso ao Meio</h1>
+    <div class="meta"><b>Data:</b> 09/11/2026 · <b>Referência:</b> Tanenbaum &amp; Wetherall, <i>Computer Networks</i>, 5. ed., caps. 3 e 4</div>
+  </header>
+  <article>
+<blockquote>
+<p><strong>Retomando o Encontro 03:</strong> terminamos com duas imagens
+— o barramento coaxial da Ethernet antiga e o Wi-Fi — em que
+<strong>vários dispositivos estão ligados ao mesmo meio</strong>. E
+deixamos uma pergunta: <strong>e se dois dispositivos falarem ao mesmo
+tempo?</strong> Também vimos que a camada física entrega bits, mas
+<strong>não sabe para quem</strong> eles são.</p>
+</blockquote>
+<blockquote>
+<p><strong>Pergunta norteadora:</strong> como vários dispositivos
+conseguem compartilhar um meio de comunicação, identificar os
+destinatários e detectar erros durante a transmissão?</p>
+</blockquote>
+<p>Este encontro responde a quatro perguntas que o cabo, sozinho, não
+resolve:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pergunta</th>
+<th>Resposta da camada de enlace</th>
+<th>Seções</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Onde começa e onde termina uma mensagem?</td>
+<td><strong>Quadros</strong> e enquadramento</td>
+<td>2–3</td>
+</tr>
+<tr class="even">
+<td>A mensagem chegou correta?</td>
+<td><strong>Detecção de erros</strong> (paridade, checksum, CRC)</td>
+<td>4–10</td>
+</tr>
+<tr class="odd">
+<td>Para quem é a mensagem?</td>
+<td><strong>Endereço MAC</strong></td>
+<td>11–14</td>
+</tr>
+<tr class="even">
+<td>Quem pode transmitir, e quando?</td>
+<td><strong>Acesso ao meio</strong> (ALOHA, CSMA, CSMA/CD)</td>
+<td>15–22</td>
+</tr>
+</tbody>
+</table>
+<h2 id="objetivos-de-aprendizagem">Objetivos de aprendizagem</h2>
+<p>Ao final deste encontro, você deverá ser capaz de:</p>
+<ol type="1">
+<li>distinguir camada física e camada de enlace;</li>
+<li>definir quadro e explicar métodos de enquadramento, incluindo
+<em>byte</em> e <em>bit stuffing</em>;</li>
+<li>explicar detecção e correção de erros e o papel da redundância;</li>
+<li>calcular paridade, um checksum simples e um CRC pequeno;</li>
+<li>explicar controle de fluxo e retransmissão (<em>stop-and-wait</em> e
+janela deslizante);</li>
+<li>identificar os papéis de LLC e MAC;</li>
+<li>interpretar endereços MAC (fabricante, unicast/multicast,
+universal/local) e tipos de entrega;</li>
+<li>reconhecer os campos de um quadro Ethernet;</li>
+<li>descrever o acesso ao meio por ALOHA, CSMA e CSMA/CD, incluindo o
+<em>backoff</em> exponencial;</li>
+<li>diferenciar half-duplex e full-duplex, domínio de colisão e domínio
+de broadcast;</li>
+<li>comparar hub, switch e roteador quanto à camada em que atuam;</li>
+<li>observar no Packet Tracer a diferença entre um meio compartilhado
+(hub) e enlaces dedicados (switch).</li>
+</ol>
+<hr />
+<h1 class="parte" id="parte-i-da-camada-física-à-camada-de-enlace">PARTE
+I — DA CAMADA FÍSICA À CAMADA DE ENLACE</h1>
+<h1 id="da-camada-física-à-camada-de-enlace">1. Da camada física à
+camada de enlace</h1>
+<p>Nos encontros anteriores, estudamos a representação de bits por
+sinais e sua propagação em meios como cobre, fibra óptica e rádio. A
+camada física é responsável por transportar o <strong>fluxo de
+bits</strong>. Mas um fluxo de bits, isoladamente, não responde a
+questões fundamentais: onde começa uma mensagem? Onde termina? Como
+saber se chegou corrompida? Para quem ela é? Quem pode transmitir quando
+vários dispositivos compartilham o canal?</p>
+<p>Essas questões introduzem a <strong>camada de enlace de
+dados</strong> (<em>Data Link Layer</em>), a camada 2 do modelo OSI.</p>
+<pre class="text"><code>              CAMADA DE REDE
+                   │ pacote
+                   ▼
+              CAMADA DE ENLACE
+                   │ quadro
+                   ▼
+              CAMADA FÍSICA
+                   │ bits/sinais
+                   ▼
+             MEIO DE TRANSMISSÃO</code></pre>
+<p>O enlace organiza os bits em <strong>quadros</strong>
+(<em>frames</em>) e define regras de comunicação entre dispositivos
+ligados <strong>ao mesmo enlace</strong>. No tratamento de Tanenbaum,
+seus problemas centrais são: oferecer um serviço bem definido à camada
+de rede, enquadramento, controle de erros e controle de fluxo. A questão
+do compartilhamento do canal é tratada na <strong>subcamada
+MAC</strong>.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Unidade de dados (PDU)</th>
+<th>Camada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bit / sinal</td>
+<td>Física (1)</td>
+</tr>
+<tr class="even">
+<td><strong>quadro</strong> (<em>frame</em>)</td>
+<td><strong>Enlace (2)</strong></td>
+</tr>
+<tr class="odd">
+<td>pacote (<em>packet</em>)</td>
+<td>Rede (3)</td>
+</tr>
+<tr class="even">
+<td>segmento</td>
+<td>Transporte (4)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="serviços-oferecidos-à-camada-de-rede">1.1 Serviços oferecidos à
+camada de rede</h2>
+<p>Tanenbaum descreve três tipos de serviço que um enlace pode
+oferecer:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Serviço</th>
+<th>Como funciona</th>
+<th>Exemplo típico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Sem conexão e sem confirmação</strong></td>
+<td>O quadro é enviado; se for perdido ou chegar com erro, o enlace não
+tenta recuperá-lo</td>
+<td><strong>Ethernet</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Sem conexão e com confirmação</strong></td>
+<td>Cada quadro recebido é confirmado; sem confirmação, o quadro é
+reenviado</td>
+<td><strong>Wi-Fi (802.11)</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Orientado a conexão e com confirmação</strong></td>
+<td>Estabelece-se uma conexão; quadros são numerados, confirmados e
+entregues em ordem</td>
+<td>enlaces de longa distância ou pouco confiáveis</td>
+</tr>
+</tbody>
+</table>
+<p>A escolha faz sentido: em um cabo de boa qualidade, erros são raros,
+e confirmar cada quadro desperdiçaria capacidade. No rádio, erros e
+perdas são comuns, e vale a pena recuperá-los já no enlace.</p>
+<h2 id="comunicação-por-enlace-versus-comunicação-fim-a-fim">1.2
+Comunicação por enlace versus comunicação fim a fim</h2>
+<p>A camada de enlace trata da transferência sobre <strong>um
+enlace</strong> — entre dispositivos vizinhos. Quando a comunicação
+atravessa um <strong>roteador</strong>, o quadro que chega é desfeito e
+um <strong>novo quadro</strong> é montado para o enlace seguinte.</p>
+<pre class="text"><code>PC A ── enlace 1 ── SWITCH ── enlace 1 ── ROTEADOR ── enlace 2 ── PC B
+        ╰────────── quadro 1 ──────────╯              ╰─ quadro 2 ─╯</code></pre>
+<p>Um <strong>switch</strong> encaminha o quadro sem alterar seus
+endereços de enlace; um <strong>roteador</strong> separa enlaces
+diferentes e cria um quadro novo a cada salto. Guarde esta observação:
+<strong>o endereço de enlace muda a cada roteador, mas o endereço de
+destino final (IP) não muda</strong>. Ela será retomada no Encontro 05 e
+aprofundada na disciplina de endereçamento IP (INRC230003).</p>
+<hr />
+<h1 id="o-que-é-um-quadro">2. O que é um quadro?</h1>
+<p>Um <strong>quadro</strong> é a unidade de dados da camada de enlace.
+Ele envolve os dados recebidos da camada superior e acrescenta
+informações de controle necessárias à transmissão.</p>
+<pre class="text"><code>┌────────────────┬────────────────────────┬────────────────┐
+│   CABEÇALHO    │         DADOS          │     TRAILER    │
+└────────────────┴────────────────────────┴────────────────┘
+      header              payload                trailer</code></pre>
+<ul>
+<li>O <strong>cabeçalho</strong> contém informações de endereçamento e
+controle (por exemplo, origem, destino e tipo de conteúdo).</li>
+<li>O <strong>payload</strong> transporta os dados da camada
+superior.</li>
+<li>O <strong>trailer</strong> normalmente contém o código de detecção
+de erros.</li>
+</ul>
+<p>A organização exata varia conforme o protocolo. Este diagrama é
+genérico; o formato real de um quadro Ethernet aparece na seção 14.</p>
+<h2 id="encapsulamento">2.1 Encapsulamento</h2>
+<p>O processo de adicionar informações de controle aos dados recebidos é
+chamado <strong>encapsulamento</strong>.</p>
+<pre class="text"><code>Pacote da camada de rede
+          │
+          ▼
+     [    DADOS    ]
+          │ + cabeçalho e trailer de enlace
+          ▼
+[ CABEÇALHO | DADOS | TRAILER ]   ← quadro
+          │
+          ▼
+   bits → sinais (camada física)</code></pre>
+<p>No receptor ocorre o processo inverso
+(<strong>desencapsulamento</strong>): o quadro é verificado, os campos
+de controle são lidos e, se tudo estiver correto e o quadro for
+destinado àquele dispositivo, os dados são entregues à camada
+superior.</p>
+<hr />
+<h1 id="enquadramento-framing">3. Enquadramento (<em>framing</em>)</h1>
+<p>Se a camada física entrega uma sequência contínua de bits, como o
+receptor distingue um quadro do seguinte? Esse é o problema do
+<strong>enquadramento</strong>.</p>
+<pre class="text"><code>Fluxo recebido: 101101010001110101101000111...
+
+Separação lógica:
+[ QUADRO 1 ][ QUADRO 2 ][ QUADRO 3 ]</code></pre>
+<p>Tanenbaum discute quatro métodos clássicos:</p>
+<ol type="1">
+<li><strong>Contagem de bytes:</strong> um campo no cabeçalho indica o
+tamanho do quadro. Simples, mas frágil: se esse campo for corrompido, o
+receptor perde o alinhamento e não consegue mais encontrar o início dos
+quadros seguintes.</li>
+<li><strong>Bytes delimitadores com <em>byte stuffing</em>:</strong> um
+byte especial (<code>FLAG</code>) marca o início e o fim do quadro;
+quando aparece nos dados, é “escapado”.</li>
+<li><strong>Bits delimitadores com <em>bit stuffing</em>:</strong> uma
+sequência especial de bits delimita os quadros; bits extras são
+inseridos nos dados para que essa sequência nunca apareça por
+acaso.</li>
+<li><strong>Violações de codificação física:</strong> o código de linha
+tem símbolos que nunca representam dados; eles podem marcar fronteiras.
+Exemplo: o 100BASE-TX usa códigos especiais do esquema 4B/5B para
+indicar início e fim de transmissão.</li>
+</ol>
+<p>Na prática, muitos protocolos <strong>combinam</strong> métodos para
+ganhar robustez.</p>
+<h2 id="byte-stuffing">3.1 Byte stuffing</h2>
+<p>Suponha que <code>FLAG</code> marque o começo e o fim do quadro. Se o
+conteúdo contiver <code>FLAG</code>, o transmissor precisa diferenciá-lo
+de um delimitador. Para isso, insere um byte de escape
+(<code>ESC</code>) antes dele. E se o próprio <code>ESC</code> aparecer
+nos dados? Ele também é escapado.</p>
+<pre class="text"><code>Dados originais          Dados após o stuffing
+A  FLAG  B          →    A  ESC FLAG  B
+A  ESC   B          →    A  ESC ESC   B
+A  ESC FLAG  B      →    A  ESC ESC ESC FLAG  B
+
+Transmissão:   FLAG | A ESC FLAG B | FLAG
+               início    dados      fim</code></pre>
+<p>O receptor faz o inverso: ao encontrar <code>ESC</code>, descarta-o e
+trata o byte seguinte como dado comum.</p>
+<p><strong>Exemplo real — PPP:</strong> o protocolo PPP usa
+<code>FLAG = 0x7E</code> e <code>ESC = 0x7D</code>. O byte escapado tem
+o bit 5 invertido: <code>0x7E</code> vira <code>0x7D 0x5E</code> e
+<code>0x7D</code> vira <code>0x7D 0x5D</code>.</p>
+<h2 id="bit-stuffing">3.2 Bit stuffing</h2>
+<p>No protocolo HDLC, o delimitador é <code>01111110</code> (seis bits
+<code>1</code> seguidos). Regra: <strong>sempre que o transmissor
+encontrar cinco <code>1</code> consecutivos nos dados, insere um
+<code>0</code></strong>. O receptor, ao ver cinco <code>1</code>
+seguidos de um <code>0</code>, remove esse <code>0</code>.</p>
+<pre class="text"><code>Dados originais:   0 1 1 1 1 1 1 0         ← igual ao delimitador!
+Após stuffing:     0 1 1 1 1 1 0 1 0
+                             ↑
+                       0 inserido
+
+Transmissão:  01111110 | 011111010 | 01111110
+              delimit.     dados      delimit.</code></pre>
+<p>Assim, seis <code>1</code> seguidos só aparecem no delimitador —
+nunca nos dados.</p>
+<h2 id="e-na-ethernet">3.3 E na Ethernet?</h2>
+<p>A Ethernet usa uma combinação própria. Cada quadro começa com um
+<strong>preâmbulo</strong> de 7 bytes (<code>10101010</code> repetido),
+que permite ao receptor sincronizar o relógio, seguido do
+<strong>SFD</strong> (<em>Start Frame Delimiter</em>,
+<code>10101011</code>), que indica que o quadro começa no próximo bit.
+Entre dois quadros há um <strong>intervalo mínimo de silêncio</strong>
+(<em>interframe gap</em>, 96 tempos de bit). Em várias variantes, a
+codificação física também marca o início e o fim da transmissão.</p>
+<p><strong>Pergunta para discussão:</strong> o que aconteceria se os
+dados fossem enviados sem qualquer mecanismo para identificar os limites
+dos quadros?</p>
+<hr />
+<h1 class="parte" id="parte-ii-erros">PARTE II — ERROS</h1>
+<h1 id="por-que-erros-ocorrem">4. Por que erros ocorrem?</h1>
+<p>Como vimos nos Encontros 02 e 03, a camada física está sujeita a
+ruído, interferência, atenuação, distorção e, no rádio, multipercurso.
+Por isso, um bit enviado como <code>1</code> pode ser interpretado como
+<code>0</code>, ou vice-versa.</p>
+<pre class="text"><code>Enviado:   1 0 1 1 0 0 1 0
+Recebido:  1 0 1 0 0 0 1 0
+                 ↑
+            bit alterado</code></pre>
+<p>Na prática, os erros tendem a ocorrer em <strong>rajadas</strong>
+(<em>bursts</em>): um pico de ruído ou uma interferência breve costuma
+alterar <strong>vários bits seguidos</strong>, e não um bit isolado. Um
+bom código de detecção precisa lidar bem com rajadas.</p>
+<p>Há duas tarefas diferentes:</p>
+<ul>
+<li><strong>Detecção de erros:</strong> descobrir que a informação
+recebida provavelmente foi corrompida.</li>
+<li><strong>Correção de erros:</strong> reconstruir a informação
+original, quando o código oferece redundância suficiente.</li>
+</ul>
+<p>Detecção não implica correção. Uma implementação pode
+<strong>descartar</strong> o quadro e deixar a recuperação para outra
+etapa; outras tecnologias usam códigos capazes de
+<strong>corrigir</strong> certos erros no próprio receptor.</p>
+<hr />
+<h1 id="redundância-o-princípio-dos-códigos">5. Redundância: o princípio
+dos códigos</h1>
+<p>Para detectar ou corrigir erros, acrescentamos
+<strong>redundância</strong> aos dados. Em vez de enviar apenas os bits
+de informação, transmitimos também bits <strong>calculados a partir
+deles</strong>.</p>
+<pre class="text"><code>Dados originais ──► cálculo ──► Dados + redundância
+                                        │
+                                        ▼
+                                      Canal
+                                        │
+                                        ▼
+                     Receptor refaz o cálculo e compara</code></pre>
+<p>Essa redundância consome capacidade, mas permite identificar
+alterações. O equilíbrio entre eficiência e confiabilidade depende do
+método escolhido.</p>
+<h2 id="distância-de-hamming">5.1 Distância de Hamming</h2>
+<p>A <strong>distância de Hamming</strong> entre duas palavras binárias
+é o número de posições em que elas diferem.</p>
+<pre class="text"><code>1 0 0 0 1 0 0 1
+1 0 1 1 0 0 0 1
+    ↑ ↑ ↑          → distância = 3</code></pre>
+<p>A distância de um <strong>código</strong> é a menor distância entre
+quaisquer duas palavras válidas desse código. Ela determina sua
+capacidade:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Para…</th>
+<th>o código precisa de distância</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>detectar</strong> até <em>d</em> erros</td>
+<td><em>d</em> + 1</td>
+</tr>
+<tr class="even">
+<td><strong>corrigir</strong> até <em>d</em> erros</td>
+<td>2<em>d</em> + 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Intuição:</strong> se as palavras válidas estão “longe” umas
+das outras, alguns poucos erros não transformam uma palavra válida em
+outra palavra válida. O receptor percebe que recebeu algo inválido e, se
+a distância for grande o suficiente, consegue identificar qual era a
+palavra válida mais próxima.</p>
+<p><strong>Exemplo (Tanenbaum):</strong> o código com apenas quatro
+palavras válidas — <code>0000000000</code>, <code>0000011111</code>,
+<code>1111100000</code> e <code>1111111111</code> — tem distância 5. Ele
+<strong>detecta até 4 erros</strong> ou <strong>corrige até 2</strong>.
+Se chegar <code>0000000111</code>, a palavra válida mais próxima é
+<code>0000011111</code> (distância 2), e o receptor corrige para
+ela.</p>
+<hr />
+<h1 id="bit-de-paridade">6. Bit de paridade</h1>
+<p>O método mais simples de detecção acrescenta <strong>um bit de
+paridade</strong> aos dados.</p>
+<p>Na <strong>paridade par</strong>, o total de bits <code>1</code> —
+incluindo o bit de paridade — deve ser <strong>par</strong>.</p>
+<pre class="text"><code>Dados:          1 0 1 1 0 0 1
+Quantidade de 1: 4 (par)
+Paridade par:   0
+Transmitido:    1 0 1 1 0 0 1 | 0</code></pre>
+<p>O receptor conta os <code>1</code> recebidos. Se o total for ímpar,
+houve erro.</p>
+<p><strong>Limites:</strong> a paridade detecta <strong>qualquer número
+ímpar</strong> de bits invertidos, mas <strong>dois bits
+invertidos</strong> (ou qualquer número par) mantêm a paridade correta e
+passam despercebidos. Como erros vêm em rajadas, essa é uma limitação
+séria. O código de paridade tem distância 2: detecta 1 erro e não
+corrige nenhum.</p>
+<p><strong>Variação:</strong> a <strong>paridade bidimensional</strong>
+organiza os dados em uma matriz e calcula a paridade de cada linha e de
+cada coluna. Com isso, detecta mais padrões de erro e consegue até
+<strong>localizar e corrigir</strong> um bit único invertido (a linha e
+a coluna com paridade errada indicam a posição).</p>
+<p><strong>Exercício rápido:</strong> para os dados
+<code>1101010</code>, qual deve ser o bit de paridade par?</p>
+<hr />
+<h1 id="checksum">7. Checksum</h1>
+<p>Um <strong>checksum</strong> (soma de verificação) é um valor
+calculado somando blocos de dados. O receptor refaz a soma para
+verificar a integridade.</p>
+<pre class="text"><code>Dados ─► algoritmo de checksum ─► valor de verificação
+                                         │
+                                    transmitido
+                                         │
+Receptor ─► novo cálculo ─► comparação ─► aceita / rejeita</code></pre>
+<h2 id="exemplo-soma-em-complemento-de-um">7.1 Exemplo: soma em
+complemento de um</h2>
+<p>O checksum usado em protocolos da Internet (IP, TCP, UDP) soma
+palavras de 16 bits em <strong>complemento de um</strong>: o “vai um”
+que sai da palavra é somado de volta no bit menos significativo e, no
+final, o resultado é invertido. Para facilitar, veja o mesmo
+procedimento com palavras de 4 bits:</p>
+<pre class="text"><code>Palavras:        0110
+               + 1001
+               ──────
+                 1111
+               + 1100
+               ──────
+                11011   → o &quot;vai um&quot; volta ao início: 1011 + 1 = 1100
+
+Soma:            1100
+Checksum (inverter os bits):  0011   ← transmitido junto com os dados</code></pre>
+<p>O receptor soma todas as palavras <strong>e</strong> o checksum:
+<code>1100 + 0011 = 1111</code>. Se o resultado for só bits
+<code>1</code>, os dados são aceitos.</p>
+<h2 id="limitações">7.2 Limitações</h2>
+<p>Checksums são simples e baratos de calcular, mas mais fracos que o
+CRC. Exemplo: como a soma não depende da ordem, se duas palavras forem
+<strong>trocadas de posição</strong> durante a transmissão, o checksum
+continua o mesmo e o erro <strong>não é detectado</strong>.</p>
+<p>Por isso, o checksum costuma ser usado em <strong>camadas
+superiores</strong>, implementado em software, enquanto a camada de
+enlace usa CRC, implementado em hardware.</p>
+<p><strong>Cuidado:</strong> checksum e CRC <strong>não são mecanismos
+de segurança</strong>. Eles detectam alterações acidentais, mas quem
+altera os dados de propósito pode simplesmente recalcular o valor de
+verificação. A proteção contra alterações intencionais exige
+criptografia.</p>
+<hr />
+<h1 id="crc-verificação-de-redundância-cíclica">8. CRC — Verificação de
+Redundância Cíclica</h1>
+<p>O <strong>CRC</strong> (<em>Cyclic Redundancy Check</em>) é a técnica
+de detecção de erros mais usada em enlaces, inclusive na Ethernet e no
+Wi-Fi. Ele trata sequências de bits como <strong>polinômios</strong> com
+coeficientes 0 ou 1 e calcula o <strong>resto</strong> de uma divisão
+por um <strong>polinômio gerador</strong> combinado previamente entre
+transmissor e receptor.</p>
+<pre class="text"><code>Mensagem ──► Divisão módulo 2 pelo gerador ──► Resto (CRC)
+    │                                              │
+    └─────────────────────┬────────────────────────┘
+                          ▼
+                    Mensagem + CRC</code></pre>
+<p>Na aritmética <strong>módulo 2</strong>, não existe “vai um” nem
+“empresta um”: somar e subtrair são a mesma operação, o
+<strong>XOR</strong> (<code>0⊕0=0</code>, <code>0⊕1=1</code>,
+<code>1⊕0=1</code>, <code>1⊕1=0</code>).</p>
+<h2 id="exemplo-completo">8.1 Exemplo completo</h2>
+<ul>
+<li><strong>Mensagem:</strong> <code>110101</code> (polinômio x⁵ + x⁴ +
+x² + 1)</li>
+<li><strong>Gerador:</strong> <code>1011</code> (polinômio x³ + x + 1,
+de grau 3)</li>
+</ul>
+<p><strong>Passo 1:</strong> acrescentar à mensagem tantos zeros quanto
+o grau do gerador (3 zeros): <code>110101000</code>.</p>
+<p><strong>Passo 2:</strong> dividir por <code>1011</code> usando XOR.
+Em cada etapa, se o primeiro bit for <code>1</code>, faz-se XOR com o
+gerador; se for <code>0</code>, faz-se XOR com <code>0000</code>.</p>
+<pre class="text"><code>             1 1 1 1 0 1        ← quociente (descartado)
+      ─────────────────
+1011 │ 1 1 0 1 0 1 0 0 0
+       1 0 1 1
+       ───────
+         1 1 0 0
+         1 0 1 1
+         ───────
+           1 1 1 1
+           1 0 1 1
+           ───────
+             1 0 0 0
+             1 0 1 1
+             ───────
+               0 1 1 0
+               0 0 0 0
+               ───────
+                 1 1 0 0
+                 1 0 1 1
+                 ───────
+                   1 1 1   ← resto = CRC</code></pre>
+<p><strong>Passo 3:</strong> substituir os zeros acrescentados pelo
+resto. O quadro transmitido é:</p>
+<pre class="text"><code>110101 | 111
+dados    CRC</code></pre>
+<p><strong>No receptor:</strong> divide-se toda a sequência recebida
+(<code>110101111</code>) pelo mesmo gerador. Se o resto for
+<code>000</code>, a sequência é aceita. Qualquer outro resto indica
+erro. (Faça a divisão e confira!)</p>
+<h2 id="por-que-o-crc-é-tão-usado">8.2 Por que o CRC é tão usado?</h2>
+<ul>
+<li>É calculado <strong>muito rapidamente em hardware</strong>, com
+registradores de deslocamento e portas XOR.</li>
+<li>Com um gerador bem escolhido, detecta <strong>todos os erros de um
+único bit</strong>, todas as <strong>rajadas</strong> de comprimento
+menor ou igual ao grau do gerador e a grande maioria das rajadas
+maiores.</li>
+<li>A Ethernet usa o <strong>CRC-32</strong> (gerador de grau 32): ele
+detecta todas as rajadas de até 32 bits. O resultado ocupa os 4 bytes do
+campo <strong>FCS</strong> (<em>Frame Check Sequence</em>), no final do
+quadro.</li>
+</ul>
+<p><strong>Limite importante:</strong> o CRC detecta erros com altíssima
+probabilidade, mas <strong>não garante</strong> detectar todos os erros
+possíveis, <strong>não corrige</strong> nada e <strong>não
+oferece</strong> autenticação.</p>
+<hr />
+<h1 id="detecção-versus-correção-de-erros">9. Detecção versus correção
+de erros</h1>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspecto</th>
+<th>Detecção</th>
+<th>Correção (FEC)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Objetivo</td>
+<td>Identificar corrupção</td>
+<td>Recuperar a informação</td>
+</tr>
+<tr class="even">
+<td>Exemplos</td>
+<td>Paridade, checksum, CRC</td>
+<td>Código de Hamming, Reed-Solomon, LDPC</td>
+</tr>
+<tr class="odd">
+<td>Redundância</td>
+<td>Menor</td>
+<td>Maior</td>
+</tr>
+<tr class="even">
+<td>Reação ao erro</td>
+<td>Descartar e, talvez, retransmitir</td>
+<td>Corrigir no próprio receptor</td>
+</tr>
+<tr class="odd">
+<td>Bom quando…</td>
+<td>erros são raros e retransmitir é barato</td>
+<td>erros são frequentes ou retransmitir é caro, lento ou
+impossível</td>
+</tr>
+</tbody>
+</table>
+<p>A correção direta (<strong>FEC</strong>, <em>Forward Error
+Correction</em>) é usada, por exemplo, em <strong>Wi-Fi</strong>,
+<strong>10GBASE-T</strong>, fibra de longa distância, comunicação por
+<strong>satélite</strong>, sondas espaciais, CDs/DVDs e QR codes.</p>
+<p><strong>E o que a Ethernet faz ao detectar erro?</strong>
+Simplesmente <strong>descarta o quadro</strong>, sem avisar ninguém. Se
+os dados forem importantes, a recuperação fica a cargo de camadas
+superiores (por exemplo, o TCP, na camada de transporte).</p>
+<hr />
+<h1 id="controle-de-fluxo-e-retransmissão">10. Controle de fluxo e
+retransmissão</h1>
+<h2 id="controle-de-fluxo">10.1 Controle de fluxo</h2>
+<p>Mesmo sem erros, um transmissor pode enviar dados mais rapidamente do
+que o receptor consegue processar.</p>
+<pre class="text"><code>Transmissor rápido ─────► Receptor lento
+    100 quadros/s             20 quadros/s
+                          (buffers transbordam → quadros perdidos)</code></pre>
+<p>O <strong>controle de fluxo</strong> estabelece regras para que a
+velocidade de envio não sobrecarregue o receptor — tipicamente, o
+receptor dá “permissão” para o transmissor continuar.</p>
+<h2 id="stop-and-wait-envia-e-espera">10.2 Stop-and-wait (envia e
+espera)</h2>
+<p>No mecanismo mais simples, o transmissor envia um quadro e
+<strong>aguarda a confirmação</strong> (<strong>ACK</strong>) antes de
+enviar o próximo:</p>
+<pre class="text"><code>Transmissor                      Receptor
+    │ -------- QUADRO 0 --------► │
+    │ ◄---------- ACK ----------- │
+    │ -------- QUADRO 1 --------► │
+    │ ◄---------- ACK ----------- │</code></pre>
+<p>O mesmo esquema serve para <strong>recuperar erros</strong> (os
+protocolos ARQ, <em>Automatic Repeat reQuest</em>):</p>
+<ul>
+<li>O transmissor liga um <strong>temporizador</strong>
+(<em>timeout</em>) ao enviar. Se o ACK não chegar a tempo — porque o
+quadro ou o ACK se perdeu, ou porque o quadro chegou com erro e foi
+descartado —, <strong>reenvia</strong>.</li>
+<li>Os quadros são <strong>numerados</strong> (no stop-and-wait, basta
+alternar 0 e 1). Assim, se o ACK se perder e o quadro for reenviado, o
+receptor reconhece a <strong>duplicata</strong> e não a entrega duas
+vezes.</li>
+</ul>
+<pre class="text"><code>Transmissor                      Receptor
+    │ -------- QUADRO 0 --------► │
+    │          ✗ ACK perdido ---- │
+ timeout
+    │ -------- QUADRO 0 --------► │   &quot;já recebi o 0&quot; → descarta a cópia
+    │ ◄---------- ACK ----------- │                      e confirma de novo</code></pre>
+<h2 id="o-custo-de-esperar">10.3 O custo de esperar</h2>
+<p>O stop-and-wait é simples, mas deixa o canal <strong>ocioso</strong>
+enquanto espera. A utilização do canal é:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mo>=</mo><mfrac><msub><mi>t</mi><mtext mathvariant="normal">quadro</mtext></msub><mrow><msub><mi>t</mi><mtext mathvariant="normal">quadro</mtext></msub><mo>+</mo><mi>R</mi><mi>T</mi><mi>T</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+U = \frac{t_{\text{quadro}}}{t_{\text{quadro}} + RTT}
+</annotation></semantics></math></p>
+<p>em que <em>t</em><sub>quadro</sub> é o tempo para transmitir o quadro
+e <em>RTT</em> é o tempo de ida e volta.</p>
+<p><strong>Exemplo (Tanenbaum):</strong> um canal de satélite de 50
+kbit/s, com RTT de 500 ms, envia quadros de 1000 bits.</p>
+<ul>
+<li>Tempo para transmitir o quadro: 1000 / 50 000 = <strong>20
+ms</strong>.</li>
+<li>Utilização: 20 / (20 + 500) ≈ <strong>3,8%</strong>.</li>
+</ul>
+<p>O transmissor passa <strong>96% do tempo parado</strong>, esperando
+confirmações.</p>
+<h2 id="janela-deslizante">10.4 Janela deslizante</h2>
+<p>Em protocolos de <strong>janela deslizante</strong>, o transmissor
+pode enviar <strong>vários quadros</strong> antes de receber a
+confirmação do primeiro. O tamanho da janela limita quantos quadros
+podem estar “em voo” sem confirmação.</p>
+<pre class="text"><code>Janela de 4 quadros:
+
+ já confirmados │ enviados, aguardando ACK │ podem ser enviados │ ainda não
+   [0][1][2]    │        [3][4]            │      [5][6]        │ [7][8]...
+                ╰──────────── janela ──────────────────╯
+                     ↑ a cada ACK, a janela &quot;desliza&quot; para a direita</code></pre>
+<p>Quando um quadro se perde, há duas estratégias clássicas:</p>
+<ul>
+<li><strong>Go-Back-N:</strong> o receptor descarta os quadros que
+chegam depois do perdido, e o transmissor reenvia <strong>a partir do
+quadro perdido</strong>.</li>
+<li><strong>Repetição seletiva</strong> (<em>Selective Repeat</em>): o
+receptor guarda os quadros que chegam depois do perdido, e o transmissor
+reenvia <strong>só o quadro perdido</strong>.</li>
+</ul>
+<p>O objetivo aqui é entender o problema e a ideia geral, não
+implementar esses algoritmos.</p>
+<h2 id="e-na-prática">10.5 E na prática?</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tecnologia</th>
+<th>Confirma cada quadro?</th>
+<th>Controle de fluxo no enlace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Ethernet</strong></td>
+<td><strong>Não</strong>: quadro com erro é descartado</td>
+<td>Opcional, por quadros de <strong>pausa</strong> (IEEE 802.3x)</td>
+</tr>
+<tr class="even">
+<td><strong>Wi-Fi</strong></td>
+<td><strong>Sim</strong>: cada quadro unicast recebe ACK; sem ACK, há
+retransmissão</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>TCP</strong> (camada de transporte)</td>
+<td>Sim, fim a fim, com janela deslizante</td>
+<td>Sim, fim a fim</td>
+</tr>
+</tbody>
+</table>
+<p>Os mecanismos de janela deslizante vistos aqui reaparecem, quase
+iguais, no <strong>TCP</strong>.</p>
+<hr />
+<h1 class="parte"
+id="parte-iii-endereçamento-para-quem-é-o-quadro">PARTE III —
+ENDEREÇAMENTO: PARA QUEM É O QUADRO?</h1>
+<h1 id="subcamadas-llc-e-mac">11. Subcamadas LLC e MAC</h1>
+<p>Na família de padrões <strong>IEEE 802</strong> (que inclui Ethernet
+e Wi-Fi), a camada de enlace é dividida em duas subcamadas:</p>
+<ul>
+<li><strong>LLC — Logical Link Control</strong> (IEEE 802.2): interface
+com a camada de rede; identifica qual protocolo superior está sendo
+transportado.</li>
+<li><strong>MAC — Medium Access Control:</strong> regras de
+<strong>acesso ao meio</strong>, formato do quadro,
+<strong>endereçamento</strong> de enlace e detecção de erros (FCS). É
+específica de cada tecnologia: a MAC do Ethernet (802.3) é diferente da
+MAC do Wi-Fi (802.11).</li>
+</ul>
+<pre class="text"><code>         CAMADA DE ENLACE
+┌──────────────────────────────┐
+│ LLC — controle lógico        │   comum a todas as redes 802
+├──────────────────────────────┤
+│ MAC — acesso ao meio         │   específica: 802.3, 802.11…
+└──────────────────────────────┘
+         CAMADA FÍSICA</code></pre>
+<p><strong>Na prática atual:</strong> no tráfego IP comum sobre
+Ethernet, o papel da LLC é cumprido por um campo do próprio cabeçalho, o
+<strong>EtherType</strong> (seção 14), e o cabeçalho LLC nem aparece.
+Ele ainda é usado em alguns protocolos e no Wi-Fi.</p>
+<p><strong>Cuidado:</strong> a divisão LLC/MAC pertence à arquitetura
+IEEE 802; nem todo protocolo de enlace (por exemplo, o PPP) é organizado
+dessa forma.</p>
+<hr />
+<h1 id="endereços-mac">12. Endereços MAC</h1>
+<p>Um <strong>endereço MAC</strong> identifica uma <strong>interface de
+rede</strong> no enlace. Em Ethernet e Wi-Fi, ele tem <strong>48 bits (6
+bytes)</strong> e é escrito em hexadecimal, com cada par de dígitos
+representando um byte.</p>
+<pre class="text"><code>02:1A:2B:3C:4D:5E</code></pre>
+<p><strong>Importante:</strong> endereço MAC <strong>não é</strong>
+endereço IP. O MAC identifica a interface <strong>dentro do enlace
+local</strong>; o endereço IP identifica o destino <strong>entre
+redes</strong> e será estudado em outra disciplina (INRC230003). Um
+computador com placa cabeada e placa Wi-Fi tem <strong>dois</strong>
+endereços MAC, um por interface.</p>
+<h2 id="estrutura-do-endereço">12.1 Estrutura do endereço</h2>
+<pre class="text"><code>        3 bytes                 3 bytes
+┌──────────────────────┬──────────────────────┐
+│  OUI — fabricante    │ identificação da     │
+│  (atribuído pela     │ interface (escolhida │
+│   IEEE)              │  pelo fabricante)    │
+└──────────────────────┴──────────────────────┘</code></pre>
+<ul>
+<li><strong>OUI</strong> (<em>Organizationally Unique Identifier</em>):
+os 3 primeiros bytes identificam o fabricante. A lista é pública, e é
+por isso que o Wireshark consegue mostrar o nome do fabricante ao lado
+do MAC.</li>
+<li>Os 3 últimos bytes são atribuídos pelo fabricante a cada
+interface.</li>
+</ul>
+<p>Dois bits do <strong>primeiro byte</strong> têm significado
+especial:</p>
+<pre class="text"><code>primeiro byte:   b7 b6 b5 b4 b3 b2 b1 b0
+                                    │  └─ bit I/G: 0 = individual (unicast)
+                                    │              1 = grupo (multicast/broadcast)
+                                    └──── bit U/L: 0 = universal (gravado pelo fabricante)
+                                                   1 = local (configurado/aleatório)</code></pre>
+<p><strong>Exemplo:</strong> no endereço <code>02:1A:2B:3C:4D:5E</code>,
+o primeiro byte é <code>02</code> = <code>0000 0010</code>.</p>
+<ul>
+<li>b0 = 0 → endereço <strong>individual</strong> (unicast);</li>
+<li>b1 = 1 → endereço <strong>administrado localmente</strong>: não foi
+gravado por um fabricante, mas configurado por software.</li>
+</ul>
+<h2 id="notações">12.2 Notações</h2>
+<p>O mesmo endereço aparece de formas diferentes conforme o sistema:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Sistema</th>
+<th>Notação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linux, macOS, Wireshark</td>
+<td><code>02:1a:2b:3c:4d:5e</code></td>
+</tr>
+<tr class="even">
+<td>Windows</td>
+<td><code>02-1A-2B-3C-4D-5E</code></td>
+</tr>
+<tr class="odd">
+<td>Equipamentos Cisco (e Packet Tracer)</td>
+<td><code>021a.2b3c.4d5e</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mac-não-significa-localização-nem-identidade-permanente">12.3
+MAC não significa localização nem identidade permanente</h2>
+<p>Um endereço MAC <strong>não informa</strong> em qual sala, prédio ou
+cidade o equipamento está — é apenas um identificador usado pelo
+protocolo de enlace.</p>
+<p>Também não é correto assumir que todo MAC seja imutável ou único no
+mundo. Os sistemas operacionais permitem alterá-lo, e celulares e
+notebooks modernos usam <strong>endereços aleatórios</strong> (com o bit
+U/L = 1) em cada rede Wi-Fi, para dificultar o rastreamento do usuário.
+A unicidade global vale para os endereços universais atribuídos pelos
+fabricantes, e mesmo assim depende de os fabricantes seguirem as
+regras.</p>
+<hr />
+<h1 id="unicast-broadcast-e-multicast">13. Unicast, broadcast e
+multicast</h1>
+<p>Uma transmissão pode ser destinada a diferentes conjuntos de
+receptores.</p>
+<p><strong>Unicast:</strong> um destinatário específico.</p>
+<pre class="text"><code>A ─────────► B</code></pre>
+<p><strong>Broadcast:</strong> <strong>todos</strong> os dispositivos do
+domínio de broadcast.</p>
+<pre class="text"><code>        ┌──► B
+A ──────┼──► C
+        └──► D</code></pre>
+<p><strong>Multicast:</strong> um <strong>grupo</strong> de
+destinatários interessados.</p>
+<pre class="text"><code>        ┌──► B (grupo)
+A ──────┤
+        └──► D (grupo)
+          C (fora do grupo — ignora)</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tipo</th>
+<th>Endereço MAC de destino</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Unicast</td>
+<td>MAC de uma interface (bit I/G = 0)</td>
+<td><code>02:1A:2B:3C:4D:5E</code></td>
+</tr>
+<tr class="even">
+<td>Broadcast</td>
+<td><code>FF:FF:FF:FF:FF:FF</code> (todos os bits 1)</td>
+<td>anúncios e descobertas na rede local</td>
+</tr>
+<tr class="odd">
+<td>Multicast</td>
+<td>bit I/G = 1</td>
+<td><code>01:00:5E:…</code> (multicast IPv4), <code>33:33:…</code>
+(multicast IPv6)</td>
+</tr>
+</tbody>
+</table>
+<p>O <strong>domínio de broadcast</strong> é o conjunto de dispositivos
+alcançados por um quadro de broadcast. Ele vai até o
+<strong>roteador</strong>, que não repassa broadcasts de enlace para
+outras redes (seção 21).</p>
+<h2 id="como-uma-interface-sabe-que-o-quadro-é-para-ela">13.1 Como uma
+interface sabe que o quadro é para ela?</h2>
+<p>Em um meio compartilhado, como o barramento coaxial do Encontro 03,
+um hub ou o Wi-Fi, <strong>todas as interfaces recebem fisicamente todos
+os quadros</strong>. A placa de rede então compara o <strong>MAC de
+destino</strong> do quadro:</p>
+<pre class="text"><code>Quadro chega à placa de rede
+          │
+          ▼
+Destino = meu MAC?  ─── sim ──► aceita e entrega à camada superior
+          │ não
+Destino = broadcast? ── sim ──► aceita
+          │ não
+Destino = grupo que assino? ─ sim ─► aceita
+          │ não
+          ▼
+      descarta (silenciosamente)</code></pre>
+<p>Essa é a resposta à pergunta “<strong>para quem?</strong>” deixada no
+Encontro 03.</p>
+<p>Ferramentas como o <strong>Wireshark</strong> podem colocar a placa
+em <strong>modo promíscuo</strong>, em que ela aceita todos os quadros,
+mesmo os destinados a outros — útil para diagnóstico, e um bom motivo
+para nunca confiar que um meio compartilhado seja privado.</p>
+<hr />
+<h1 id="juntando-tudo-o-quadro-ethernet">14. Juntando tudo: o quadro
+Ethernet</h1>
+<p>O quadro Ethernet (formato chamado Ethernet II / DIX, o mais comum)
+reúne tudo o que vimos até aqui:</p>
+<pre class="text"><code> 7 bytes  1     6 bytes    6 bytes    2 bytes    46 a 1500 bytes    4 bytes
+┌─────────┬───┬──────────┬──────────┬─────────┬──────────────────┬─────────┐
+│Preâmbulo│SFD│ MAC      │ MAC      │EtherType│      DADOS       │   FCS   │
+│         │   │ DESTINO  │ ORIGEM   │         │   (+ enchimento) │ (CRC-32)│
+└─────────┴───┴──────────┴──────────┴─────────┴──────────────────┴─────────┘
+╰─ sincronização ─╯╰────────────── quadro: 64 a 1518 bytes ──────────────╯
+     (física)</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Campo</th>
+<th>Função</th>
+<th>Seção</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Preâmbulo + SFD</td>
+<td>Sincronizar o receptor e marcar o início do quadro</td>
+<td>3.3</td>
+</tr>
+<tr class="even">
+<td>MAC de destino</td>
+<td>Para quem é o quadro</td>
+<td>12–13</td>
+</tr>
+<tr class="odd">
+<td>MAC de origem</td>
+<td>Quem enviou</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td><strong>EtherType</strong></td>
+<td>Qual protocolo vai nos dados: <code>0x0800</code> = IPv4,
+<code>0x86DD</code> = IPv6, <code>0x0806</code> = ARP</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td>Dados</td>
+<td>O pacote da camada de rede; se tiver menos de 46 bytes, recebe
+<strong>enchimento</strong> (<em>padding</em>)</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>FCS</td>
+<td>CRC-32 calculado sobre destino, origem, tipo e dados</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Observações:</strong></p>
+<ul>
+<li>O <strong>destino vem primeiro</strong>. Isso permite a um switch
+começar a decidir para onde encaminhar o quadro assim que lê os
+primeiros bytes.</li>
+<li>O tamanho <strong>mínimo</strong> de 64 bytes não é arbitrário: ele
+está ligado à detecção de colisões (seção 19.3).</li>
+<li>O tamanho <strong>máximo</strong> de dados (1500 bytes) é o
+<strong>MTU</strong> padrão da Ethernet.</li>
+<li>Quando o campo de 2 bytes após a origem tem valor ≤ 1500, ele indica
+o <strong>tamanho</strong> dos dados (formato IEEE 802.3), e quem
+identifica o protocolo superior é o cabeçalho <strong>LLC</strong>.
+Valores ≥ <code>0x0600</code> indicam o <strong>EtherType</strong>.</li>
+<li>O <strong>Wireshark</strong> normalmente <strong>não mostra</strong>
+o preâmbulo nem o FCS, porque a própria placa de rede os remove antes de
+entregar o quadro ao sistema.</li>
+</ul>
+<hr />
+<h1 class="parte" id="parte-iv-acesso-ao-meio-quem-fala-e-quando">PARTE
+IV — ACESSO AO MEIO: QUEM FALA, E QUANDO?</h1>
+<h1 id="o-problema-do-meio-compartilhado">15. O problema do meio
+compartilhado</h1>
+<p>Voltemos ao barramento coaxial do Encontro 03:</p>
+<pre class="text"><code>      PC1        PC2        PC3        PC4
+       │          │          │          │
+ ▣═════╧══════════╧══════════╧══════════╧═════▣
+              um único meio compartilhado</code></pre>
+<p>Se dois dispositivos transmitirem ao mesmo tempo, seus sinais se
+sobrepõem e nenhum dos dois é entendido. Surge a pergunta: <strong>quem
+pode transmitir, e quando?</strong></p>
+<h2 id="por-que-não-dividir-o-canal-em-partes-fixas">15.1 Por que não
+dividir o canal em partes fixas?</h2>
+<p>Uma solução seria dividir o canal de forma fixa — por frequência
+(FDM) ou em fatias de tempo (TDM) — e dar a cada estação a sua parte.
+Isso funciona bem para tráfego <strong>constante</strong>, como a
+telefonia tradicional.</p>
+<p>Mas o tráfego de computadores é <strong>em rajadas</strong>: uma
+estação fica em silêncio por longos períodos e, de repente, precisa
+enviar muitos dados. Com divisão fixa, a maior parte das fatias fica
+<strong>ociosa</strong>, enquanto quem precisa transmitir fica limitado
+à própria fatia.</p>
+<p>A solução é a <strong>alocação dinâmica</strong>: as estações
+disputam o canal inteiro quando têm algo a enviar. Os <strong>protocolos
+de acesso múltiplo</strong> (<em>multiple access</em>) definem as regras
+dessa disputa. Tanenbaum apresenta várias famílias; aqui veremos ALOHA,
+CSMA e CSMA/CD.</p>
+<hr />
+<h1 id="colisões">16. Colisões</h1>
+<p>Uma <strong>colisão</strong> ocorre quando transmissões simultâneas
+em um meio compartilhado se sobrepõem e comprometem a recepção.</p>
+<pre class="text"><code>Tempo ───────────────────────────────────►
+
+Estação A:      [ TRANSMISSÃO ]
+Estação B:          [ TRANSMISSÃO ]
+                       ▲
+                 sobreposição → os dois quadros se perdem</code></pre>
+<p>O <strong>domínio de colisão</strong> é o conjunto de dispositivos
+cujas transmissões podem colidir entre si. No barramento coaxial ou em
+um hub, todos os dispositivos estão no <strong>mesmo</strong> domínio de
+colisão.</p>
+<p>Nem toda transmissão simultânea resulta necessariamente em perda,
+pois isso depende da tecnologia, do canal e das condições de recepção.
+Na Ethernet clássica compartilhada, colisões eram parte normal do
+funcionamento. Na Ethernet moderna, com switches e enlaces full-duplex,
+<strong>não há colisões</strong> (seções 20 e 21).</p>
+<hr />
+<h1 id="aloha-uma-solução-histórica">17. ALOHA: uma solução
+histórica</h1>
+<p>O <strong>ALOHA</strong> foi criado em 1970 na Universidade do Havaí,
+para ligar ilhas por rádio. A regra é simples:</p>
+<blockquote>
+<p>Tem algo para enviar? <strong>Transmita.</strong> Se não houver
+confirmação (houve colisão), espere um <strong>tempo aleatório</strong>
+e tente de novo.</p>
+</blockquote>
+<p>O tempo aleatório é essencial: se as duas estações esperassem o mesmo
+tempo, colidiriam de novo.</p>
+<pre class="text"><code>ALOHA PURO — um quadro sofre colisão se qualquer outro começar
+dentro de uma janela de 2 tempos de quadro (o &quot;período vulnerável&quot;)
+
+          ├─────── período vulnerável ───────┤
+   [ outro ]     [ MEU QUADRO ]     [ outro ]
+   colide ↑                          ↑ colide</code></pre>
+<p><strong>ALOHA com slots</strong> (<em>slotted ALOHA</em>): o tempo é
+dividido em intervalos (<em>slots</em>) do tamanho de um quadro, e só se
+pode começar a transmitir no início de um slot. O período vulnerável cai
+pela metade.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Protocolo</th>
+<th>Eficiência máxima (fração útil do canal)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ALOHA puro</td>
+<td>≈ <strong>18%</strong> (1/2e)</td>
+</tr>
+<tr class="even">
+<td>ALOHA com slots</td>
+<td>≈ <strong>37%</strong> (1/e)</td>
+</tr>
+</tbody>
+</table>
+<p>Mesmo no melhor caso, a maior parte da capacidade é desperdiçada. O
+defeito fundamental: <strong>o ALOHA não escuta o canal antes de
+transmitir</strong>.</p>
+<hr />
+<h1 id="csma-carrier-sense-multiple-access">18. CSMA — Carrier Sense
+Multiple Access</h1>
+<p><strong>CSMA</strong> significa <strong>acesso múltiplo com detecção
+de portadora</strong>. A ideia é óbvia em uma conversa humana:
+<strong>escutar antes de falar</strong>.</p>
+<pre class="text"><code>Tenho quadro para enviar?
+          │
+          ▼
+    Escutar o meio
+          │
+    ┌─────┴─────┐
+    │           │
+ Ocupado      Livre
+    │           │
+ Aguardar   Transmitir</code></pre>
+<p>As variantes diferem no que fazer quando o canal está ocupado:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variante</th>
+<th>Comportamento</th>
+<th>Consequência</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1-persistente</strong></td>
+<td>Espera o canal ficar livre e transmite
+<strong>imediatamente</strong></td>
+<td>Se duas estações estiverem esperando, colidem assim que o canal
+libera (usado na Ethernet clássica)</td>
+</tr>
+<tr class="even">
+<td><strong>Não persistente</strong></td>
+<td>Espera um <strong>tempo aleatório</strong> e escuta de novo</td>
+<td>Menos colisões, mas mais tempo ocioso</td>
+</tr>
+<tr class="odd">
+<td><strong>p-persistente</strong></td>
+<td>Com o canal livre, transmite com probabilidade <em>p</em>; senão,
+espera o próximo slot</td>
+<td>Meio-termo ajustável</td>
+</tr>
+</tbody>
+</table>
+<h2 id="por-que-escutar-não-elimina-colisões">18.1 Por que escutar não
+elimina colisões?</h2>
+<p>O sinal leva tempo para se propagar pelo meio (o <strong>atraso de
+propagação</strong>, τ). Uma estação pode escutar o canal “livre”
+simplesmente porque o sinal de outra <strong>ainda não chegou</strong>
+até ela.</p>
+<pre class="text"><code>t = 0      A escuta: livre → começa a transmitir
+           A ●══►                                    ○ B
+
+t = τ − ε  O sinal de A ainda não chegou em B
+           A ●════════════════════════════════►      ○ B
+           B escuta: livre → começa a transmitir!
+
+t = τ      Os sinais se encontram → COLISÃO</code></pre>
+<p>Quanto <strong>maior</strong> o atraso de propagação em relação ao
+tempo de transmissão do quadro, <strong>pior</strong> o desempenho do
+CSMA.</p>
+<hr />
+<h1 id="csmacd-collision-detection">19. CSMA/CD — Collision
+Detection</h1>
+<p><strong>CSMA/CD</strong> acrescenta ao CSMA a <strong>detecção de
+colisão durante a transmissão</strong>: em um cabo, a estação consegue
+comparar o que envia com o que está no meio. Se perceber diferença, há
+colisão — e não faz sentido continuar enviando um quadro que já está
+perdido.</p>
+<p>Fluxo da Ethernet clássica:</p>
+<ol type="1">
+<li>Escutar o canal.</li>
+<li>Se estiver livre, iniciar a transmissão (se ocupado, esperar
+liberar).</li>
+<li>Enquanto transmite, <strong>monitorar</strong> o meio.</li>
+<li>Se detectar colisão: <strong>interromper</strong> imediatamente e
+enviar um breve <strong>sinal de reforço</strong> (<em>jam</em>), para
+que todas as estações percebam a colisão.</li>
+<li>Esperar um tempo aleatório (<em>backoff</em>) e voltar ao passo
+1.</li>
+</ol>
+<pre class="text"><code>Escutar → Transmitir → Colisão?
+                       │
+                ┌──────┴──────┐
+               Não           Sim
+                │             │
+             Concluir    Interromper + jam
+                              │
+                      Backoff exponencial
+                              │
+                           Repetir</code></pre>
+<h2 id="backoff-exponencial-binário">19.1 Backoff exponencial
+binário</h2>
+<p>Como escolher o tempo de espera? Se houver poucas estações
+disputando, a espera deve ser curta; se houver muitas, longa. A Ethernet
+resolve isso sem saber quantas estações existem: <strong>a cada colisão,
+o intervalo de sorteio dobra</strong>.</p>
+<p>Após a <em>i</em>-ésima colisão consecutiva, a estação sorteia um
+número <em>k</em> entre 0 e 2<sup><em>i</em></sup> − 1 e espera
+<em>k</em> <strong>slots</strong> (1 slot = 512 tempos de bit = 51,2 µs
+a 10 Mbit/s).</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Colisão nº</th>
+<th>Sorteia <em>k</em> entre</th>
+<th>Chance de as duas estações sortearem o mesmo valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1ª</td>
+<td>0 e 1</td>
+<td>1/2</td>
+</tr>
+<tr class="even">
+<td>2ª</td>
+<td>0 e 3</td>
+<td>1/4</td>
+</tr>
+<tr class="odd">
+<td>3ª</td>
+<td>0 e 7</td>
+<td>1/8</td>
+</tr>
+<tr class="even">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>10ª a 15ª</td>
+<td>0 e 1023 (limite)</td>
+<td>1/1024</td>
+</tr>
+<tr class="even">
+<td>16ª</td>
+<td>desiste e informa a falha</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="contexto-histórico">19.2 Contexto histórico</h2>
+<p>O CSMA/CD é associado à <strong>Ethernet clássica em meio
+compartilhado e half-duplex</strong>: o barramento coaxial (10BASE5,
+10BASE2) e, depois, os hubs. Nas redes atuais, com switches e enlaces
+full-duplex, não ocorre colisão e o CSMA/CD <strong>não participa da
+operação</strong>. A Ethernet de 10 Gbit/s e acima nem sequer define
+operação half-duplex.</p>
+<p>Por que estudar, então? Porque explica <strong>por que o switch foi
+um avanço</strong> (seção 21) e porque contrasta com o Wi-Fi, onde o
+problema da disputa continua vivo (seção 22).</p>
+<h2 id="por-que-o-quadro-ethernet-tem-no-mínimo-64-bytes">19.3 Por que o
+quadro Ethernet tem no mínimo 64 bytes?</h2>
+<p>Para detectar uma colisão, a estação precisa <strong>ainda estar
+transmitindo</strong> quando o sinal da colisão chegar de volta. No pior
+caso, a colisão acontece na extremidade oposta do cabo, e a notícia leva
+<strong>2τ</strong> (ida e volta) para chegar:</p>
+<pre class="text"><code>t = 0       A começa ●═══════════════════════════════► ○ B (distante)
+t = τ − ε   B começa, porque ainda não ouviu A ──► colisão perto de B
+t = 2τ − ε  O ruído da colisão chega de volta em A
+            → A precisa ainda estar transmitindo neste instante!</code></pre>
+<p>Logo, <strong>o tempo de transmissão de um quadro deve ser maior que
+2τ</strong>. Na Ethernet de 10 Mbit/s, com até 2500 m de extensão máxima
+e repetidores, o tempo de ida e volta no pior caso fica em torno de 50
+µs. Arredondando: <strong>512 bits = 64 bytes</strong> (51,2 µs a 10
+Mbit/s). É também esse o tamanho do slot de backoff.</p>
+<p>Se um quadro fosse menor, a estação poderia terminar de transmitir
+<strong>antes</strong> de perceber a colisão — e concluiria,
+erradamente, que o envio deu certo.</p>
+<hr />
+<h1 id="half-duplex-e-full-duplex">20. Half-duplex e full-duplex</h1>
+<p><strong>Half-duplex:</strong> os dois lados podem transmitir, mas
+<strong>não ao mesmo tempo</strong>; é preciso disputar o meio
+(CSMA/CD).</p>
+<pre class="text"><code>A ─────► B      depois      A ◄───── B</code></pre>
+<p><strong>Full-duplex:</strong> transmissão <strong>simultânea</strong>
+nos dois sentidos. No par trançado, há pares separados para cada sentido
+(ou técnicas de cancelamento de eco); na fibra, uma fibra para cada
+sentido.</p>
+<pre class="text"><code>A ─────► B
+A ◄───── B</code></pre>
+<p>Em um enlace full-duplex ponto a ponto, <strong>só existem duas
+estações</strong>, e cada uma tem seu próprio caminho de transmissão.
+<strong>Não há com quem colidir</strong>, e o CSMA/CD é desligado.</p>
+<p><strong>Problema real — incompatibilidade de duplex</strong>
+(<em>duplex mismatch</em>): se um lado do enlace está configurado como
+full-duplex e o outro como half-duplex, o lado half-duplex detecta
+“colisões” (e colisões tardias) o tempo todo, e o lado full-duplex
+recebe quadros corrompidos. A rede “funciona”, mas fica muito lenta. Por
+isso, normalmente se deixa a <strong>autonegociação</strong> ativa nos
+dois lados.</p>
+<hr />
+<h1 id="do-hub-ao-switch-ao-roteador">21. Do hub ao switch ao
+roteador</h1>
+<blockquote>
+<p><strong>O que o cabo sozinho não resolve?</strong><br />
+<strong>Por que o switch foi um avanço em relação ao hub?</strong></p>
+</blockquote>
+<p>A evolução dos equipamentos de interconexão é a melhor forma de ver,
+na prática, as camadas física, de enlace e de rede.</p>
+<pre class="text"><code>REPETIDOR / HUB (camada 1)        SWITCH (camada 2)              ROTEADOR (camada 3)
+regenera bits e repete            lê o MAC de destino e          lê o endereço de rede e
+para TODAS as portas              encaminha só para a porta      encaminha entre redes
+                                  certa                          diferentes
+
+  PC1  PC2  PC3  PC4               PC1  PC2  PC3  PC4             Rede A        Rede B
+   │    │    │    │                 │    │    │    │                │             │
+ ┌─┴────┴────┴────┴─┐            ┌──┴────┴────┴────┴──┐         ┌───┴─────────────┴──┐
+ │       HUB        │            │       SWITCH       │         │      ROTEADOR      │
+ └──────────────────┘            └────────────────────┘         └────────────────────┘
+ 1 domínio de colisão            1 domínio de colisão            separa domínios de
+ (como o barramento coaxial)     por porta (nenhum em            broadcast
+                                 full-duplex)</code></pre>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Equipamento</th>
+<th>Camada</th>
+<th>O que entende</th>
+<th>Domínios de colisão</th>
+<th>Domínios de broadcast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Repetidor / hub</td>
+<td>1 — Física</td>
+<td>Apenas sinais e bits</td>
+<td><strong>Um só</strong> para todas as portas</td>
+<td>Um</td>
+</tr>
+<tr class="even">
+<td>Ponte (<em>bridge</em>) / switch</td>
+<td>2 — Enlace</td>
+<td>Quadros e endereços MAC</td>
+<td><strong>Um por porta</strong> (nenhuma colisão em full-duplex)</td>
+<td><strong>Um</strong> — o broadcast vai a todas as portas</td>
+</tr>
+<tr class="odd">
+<td>Roteador</td>
+<td>3 — Rede</td>
+<td>Pacotes e endereços de rede (IP)</td>
+<td>Um por porta</td>
+<td><strong>Um por interface</strong> — não repassa broadcast de
+enlace</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Hub:</strong> é um “barramento coaxial dentro de uma caixa”.
+Tudo o que chega por uma porta sai por todas as outras. Todos dividem a
+mesma capacidade, operam em half-duplex e disputam o meio com
+CSMA/CD.</p>
+<p><strong>Switch:</strong> cada porta é um enlace
+<strong>dedicado</strong>. Ele lê o MAC de destino e envia o quadro
+<strong>apenas</strong> para a porta onde está o destinatário. Várias
+conversas acontecem ao mesmo tempo, em full-duplex e sem colisões.
+<em>Como o switch sabe em qual porta está cada MAC?</em> Essa é uma das
+perguntas do <strong>Encontro 05</strong>.</p>
+<p><strong>Roteador:</strong> conecta <strong>redes diferentes</strong>.
+É o limite do domínio de broadcast e o ponto em que o quadro é desfeito
+e refeito (seção 1.2). O seu funcionamento é assunto da camada de
+rede.</p>
+<hr />
+<h1 id="prévia-e-no-wi-fi">22. Prévia: e no Wi-Fi?</h1>
+<p>Trocar o hub por um switch resolveu o problema da disputa no cabo.
+Mas, no <strong>Wi-Fi</strong>, não há como dar a cada dispositivo um
+“cabo dedicado”: <strong>o ar é um meio compartilhado</strong>,
+exatamente como o barramento coaxial. A disputa pelo canal continua.</p>
+<p>O Wi-Fi (IEEE 802.11) usa uma variante chamada
+<strong>CSMA/CA</strong> (<em>Collision Avoidance</em>): em vez de
+<strong>detectar</strong> colisões enquanto transmite, ele procura
+<strong>evitá-las</strong> antes de transmitir, combinando escuta do
+meio e esperas aleatórias.</p>
+<p>Lembre também do <strong>terminal oculto</strong> do Encontro 03:</p>
+<pre class="text"><code>A  ))))))  AP  ((((((  C</code></pre>
+<p>A e C alcançam o AP, mas <strong>não se ouvem</strong>. Escutar o
+meio antes de transmitir não adianta, porque cada um acha que o canal
+está livre.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Critério</th>
+<th>CSMA/CD</th>
+<th>CSMA/CA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ideia principal</td>
+<td><strong>Detectar</strong> colisão e abortar</td>
+<td><strong>Evitar</strong> colisão</td>
+</tr>
+<tr class="even">
+<td>Associação clássica</td>
+<td>Ethernet compartilhada (barramento, hub)</td>
+<td>Wi-Fi (802.11)</td>
+</tr>
+<tr class="odd">
+<td>Escuta o meio antes?</td>
+<td>Sim</td>
+<td>Sim</td>
+</tr>
+<tr class="even">
+<td>Backoff aleatório</td>
+<td>Depois de uma colisão</td>
+<td>Faz parte de todo acesso ao canal</td>
+</tr>
+<tr class="odd">
+<td>Situação atual</td>
+<td>Histórico (switch + full-duplex)</td>
+<td>Em uso em todas as redes Wi-Fi</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Pergunta para levar:</strong><br />
+<strong>No Wi-Fi, por que não dá para simplesmente detectar a colisão
+enquanto se transmite, como no cabo?</strong></p>
+</blockquote>
+<p><strong>Não confundir:</strong> Ethernet e Wi-Fi são tecnologias de
+enlace <strong>diferentes</strong> (802.3 e 802.11), com quadros e
+regras de acesso diferentes, ainda que ambas transportem os mesmos
+pacotes IP.</p>
+<hr />
+<h1 id="integração-dos-conceitos">23. Integração dos conceitos</h1>
+<p>Considere um notebook enviando dados por Wi-Fi a um AP, que está
+ligado por cabo a um switch:</p>
+<pre class="text"><code>Dados (pacote da camada de rede)
+  │
+  ▼
+Formação do quadro (enquadramento)                    Seções 2–3
+  │
+  ▼
+Endereçamento: MAC de origem e de destino             Seções 12–14
+  │
+  ▼
+Cálculo do CRC e inserção no trailer (FCS)            Seção 8
+  │
+  ▼
+Disputa pelo canal (MAC: CSMA/CA no Wi-Fi)            Seção 22
+  │
+  ▼
+Transmissão de sinais de rádio (física)               Encontro 03
+  │
+  ▼
+AP recebe, verifica o CRC e confirma (ACK)            Seção 10.5
+  │
+  ▼
+Quadro segue pelo cabo até o switch
+(Ethernet full-duplex: sem disputa, sem ACK)          Seções 20–21</code></pre>
+<p>A camada física resolve <strong>como transmitir o sinal</strong>. A
+camada de enlace organiza <strong>como transmitir unidades de
+informação, a quem elas se destinam, se chegaram íntegras e quem pode
+usar o meio</strong>.</p>
+<hr />
+
+<hr />
+<h1 id="exercícios-de-fixação">24. Exercícios de fixação</h1>
+<p><strong>Conceitos</strong></p>
+<ol type="1">
+<li>Qual a diferença entre bit, quadro e pacote no contexto das
+camadas?</li>
+<li>Por que a camada de enlace precisa de enquadramento? Qual a
+fragilidade da contagem de bytes?</li>
+<li>Explique a finalidade do cabeçalho e do trailer em um quadro
+genérico.</li>
+<li>Que tipo de serviço (seção 1.1) a Ethernet oferece? E o Wi-Fi? Por
+que a escolha é diferente?</li>
+<li>Diferencie detecção e correção de erros. Dê um exemplo de situação
+em que a correção (FEC) é preferível.</li>
+<li>Por que a paridade simples não detecta dois bits invertidos?</li>
+<li>Por que checksum e CRC não substituem um mecanismo de
+autenticação?</li>
+<li>O que é controle de fluxo? Por que o stop-and-wait pode ser
+ineficiente?</li>
+<li>Qual a diferença conceitual entre LLC e MAC? O que o campo EtherType
+tem a ver com isso?</li>
+<li>A existência de um endereço MAC garante que um dispositivo seja
+único no mundo? Justifique.</li>
+<li>Diferencie unicast, broadcast e multicast. Como uma placa de rede
+decide se aceita um quadro?</li>
+<li>Por que o CSMA não elimina completamente as colisões?</li>
+<li>Descreva as etapas do CSMA/CD.</li>
+<li>Por que o CSMA/CD não é utilizado em Ethernet full-duplex?</li>
+<li>Diferencie domínio de colisão e domínio de broadcast. Quantos de
+cada existem em uma rede com um switch de 8 portas e 8 PCs?</li>
+<li>Compare hub, switch e roteador quanto à camada e ao que cada um
+“entende”.</li>
+</ol>
+<p><strong>Cálculos</strong></p>
+<ol start="17" type="1">
+<li>Calcule o bit de paridade par para <code>1011011</code>.</li>
+<li>Aplique <em>byte stuffing</em> (seção 3.1) aos dados
+<code>A FLAG ESC B</code>.</li>
+<li>Aplique <em>bit stuffing</em> aos dados
+<code>0111111111110</code>.</li>
+<li>Calcule o CRC da mensagem <code>1101</code> com o gerador
+<code>101</code>. Qual sequência é transmitida?</li>
+<li>Calcule o checksum em complemento de um (4 bits) das palavras
+<code>1010</code>, <code>0111</code> e <code>0011</code>.</li>
+<li>Analise o endereço <code>01:00:5E:00:00:FB</code>: o bit I/G indica
+unicast ou grupo? E o endereço <code>A4:83:E7:12:34:56</code>? É
+universal ou local?</li>
+<li>Um enlace stop-and-wait de 1 Mbit/s envia quadros de 1000 bits, com
+RTT de 9 ms. Qual é a utilização do canal?</li>
+<li>Após a 3ª colisão consecutiva, entre quais valores uma estação
+Ethernet sorteia o número de slots de espera? Quanto tempo, no máximo,
+ela espera a 10 Mbit/s?</li>
+<li>Por que o quadro Ethernet precisa ter pelo menos 64 bytes? O que
+aconteceria se fosse menor?</li>
+</ol>
+<hr />
+<h1 id="questões-para-discussão">25. Questões para discussão</h1>
+<ul>
+<li>Se um CRC indica erro, a camada de enlace sempre retransmite o
+quadro? Justifique, comparando Ethernet e Wi-Fi.</li>
+<li>É possível haver falha de comunicação mesmo quando nenhum bit é
+corrompido? (Pense em controle de fluxo e em quadros perdidos.)</li>
+<li>Por que a identificação do destinatário é importante em um canal
+compartilhado?</li>
+<li>Por que a organização em quadros é preferível a um fluxo sem
+delimitação?</li>
+<li>O que muda quando substituímos um meio compartilhado por enlaces
+dedicados full-duplex?</li>
+<li>Se a Ethernet moderna não tem colisões, por que ainda estudamos
+CSMA/CD?</li>
+<li>Se o Wi-Fi já escuta o canal, por que ainda podem ocorrer
+colisões?</li>
+<li>Por que celulares usam endereços MAC aleatórios? Que problema isso
+pode causar para o administrador da rede?</li>
+</ul>
+<hr />
+<h1 id="síntese-do-encontro">26. Síntese do encontro</h1>
+<p>A <strong>camada física</strong> transmite sinais. A <strong>camada
+de enlace</strong> organiza a comunicação em <strong>quadros</strong> e
+responde às perguntas que o cabo sozinho não resolve:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pergunta</th>
+<th>Mecanismo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Onde começa e termina?</td>
+<td>Enquadramento: delimitadores, <em>stuffing</em>, preâmbulo</td>
+</tr>
+<tr class="even">
+<td>Chegou correto?</td>
+<td>Redundância: paridade, checksum, <strong>CRC</strong> (Ethernet:
+CRC-32 no FCS)</td>
+</tr>
+<tr class="odd">
+<td>E se o receptor não der conta, ou o quadro se perder?</td>
+<td>Controle de fluxo e retransmissão (stop-and-wait, janela
+deslizante)</td>
+</tr>
+<tr class="even">
+<td>Para quem?</td>
+<td><strong>Endereço MAC</strong> de 48 bits: unicast, broadcast,
+multicast</td>
+</tr>
+<tr class="odd">
+<td>Quem fala, e quando?</td>
+<td>Protocolos de acesso múltiplo: ALOHA → CSMA →
+<strong>CSMA/CD</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Em meios compartilhados, as transmissões precisam ser coordenadas. O
+<strong>CSMA/CD</strong> foi central na Ethernet clássica (barramento e
+hub). A troca do <strong>hub</strong> pelo <strong>switch</strong>, com
+enlaces dedicados <strong>full-duplex</strong>, eliminou as colisões no
+cabo. No <strong>Wi-Fi</strong>, porém, o meio continua compartilhado, e
+a disputa é tratada pelo <strong>CSMA/CA</strong>.</p>
+<pre class="text"><code>BITS + SINAIS
+     │
+     ▼
+MEIO FÍSICO
+     │
+     ▼
+QUADROS + ENDEREÇAMENTO + VERIFICAÇÃO
+     │
+     ▼
+REGRAS DE ACESSO AO MEIO</code></pre>
+<hr />
+<h1 id="para-o-próximo-encontro">27. Para o próximo encontro</h1>
+<p>Vimos que um quadro precisa do <strong>MAC de destino</strong>. Mas,
+quando você digita:</p>
+<pre class="text"><code>ping 192.168.0.20</code></pre>
+<p>você informa um endereço <strong>IP</strong>, não um MAC.</p>
+<blockquote>
+<p><strong>Como o computador descobre o endereço MAC de quem tem aquele
+IP?</strong></p>
+</blockquote>
+<p>Essa é a pergunta do <strong>Encontro 05</strong>, em que vamos
+<strong>capturar tráfego real com o Wireshark</strong>, ver o protocolo
+ARP em ação e descobrir como o switch aprende onde está cada endereço
+MAC. Se possível, instale o Wireshark no seu computador antes da
+aula.</p>
+
+<hr />
+<h1 id="referências-e-correspondência-com-a-obra-base">Referências</h1>
+<p>TANENBAUM, Andrew S.; WETHERALL, David J. <strong>Computer
+Networks</strong>. 5. ed. Boston: Prentice Hall, 2011.</p>
+<ul>
+<li><strong>Capítulo 3 — The Data Link Layer:</strong> serviços
+oferecidos à camada de rede; <em>framing</em> (contagem de bytes,
+<em>byte stuffing</em>, <em>bit stuffing</em>, violações de
+codificação); distância de Hamming; códigos corretores e detectores
+(paridade, checksum, CRC); controle de fluxo; protocolos
+<em>stop-and-wait</em> e de janela deslizante (<em>Go-Back-N</em>,
+<em>Selective Repeat</em>).</li>
+<li><strong>Capítulo 4 — The Medium Access Control Sublayer:</strong>
+alocação estática e dinâmica do canal; ALOHA puro e com slots; CSMA
+persistente e não persistente; CSMA/CD; backoff exponencial binário;
+Ethernet clássica e comutada; formato do quadro Ethernet; redes locais
+sem fio (802.11); pontes e switches.</li>
+</ul>
+<p>KUROSE, James F.; ROSS, Keith W. <strong>Redes de computadores e a
+Internet: uma abordagem top-down</strong>. São Paulo: Pearson. (Capítulo
+sobre a camada de enlace e redes locais.)</p>
+  </article>
+</main>
+</div>
+<button class="menu-btn" id="menuBtn" aria-label="Abrir sumário">☰ Sumário</button>
+<script>
+(function(){
+  document.querySelectorAll('article table').forEach(function(t){
+    var w=document.createElement('div'); w.className='table-wrap';
+    t.parentNode.insertBefore(w,t); w.appendChild(t);
+  });
+  document.querySelectorAll('article h1.parte').forEach(function(h){
+    var a=document.querySelector('aside a[href="#'+h.id+'"]'); if(a) a.parentNode.classList.add('parte-item');
+  });
+  var toc=document.getElementById('toc'), btn=document.getElementById('menuBtn');
+  btn.addEventListener('click',function(){toc.classList.toggle('open')});
+  toc.addEventListener('click',function(e){ if(e.target.tagName==='A') toc.classList.remove('open') });
+  var links=[].slice.call(toc.querySelectorAll('a'));
+  var map={}; links.forEach(function(a){ map[decodeURIComponent(a.getAttribute('href').slice(1))]=a });
+  var heads=[].slice.call(document.querySelectorAll('article h1[id]'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){l.classList.remove('active')});
+          var a=map[e.target.id]; if(a){a.classList.add('active');
+            if(window.innerWidth>900){
+              var top=a.offsetTop, h=toc.clientHeight;
+              if(top<toc.scrollTop+60 || top>toc.scrollTop+h-60) toc.scrollTop=top-h/3;
+            }}
+        }
+      });
+    },{rootMargin:'0px 0px -75% 0px'});
+    heads.forEach(function(h){io.observe(h)});
+  }
+})();
+</script>
+</body>
+</html>

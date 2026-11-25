@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encontro 02 — Sinais, Taxas e Transmissão</title>
+<style>
+:root{
+  --bg:#f7f5f0; --paper:#ffffff; --ink:#1d2330; --muted:#5d6676;
+  --line:#e3dfd6; --accent:#0f6e8c; --accent-soft:#e3f1f5;
+  --warm:#b45f1e; --warm-soft:#fbefe4; --code-bg:#f3f1ec;
+  --side:#fbfaf7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+    --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+    --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13161c; --paper:#1a1e26; --ink:#e4e7ec; --muted:#9aa3b2;
+  --line:#2c323d; --accent:#5cc0de; --accent-soft:#183039;
+  --warm:#f0a868; --warm-soft:#33261b; --code-bg:#141820; --side:#161a21;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:16px}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.65 "Source Serif 4","Iowan Old Style",Georgia,serif;}
+.layout{display:grid; grid-template-columns:290px minmax(0,1fr); min-height:100vh}
+aside{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--side);
+  border-right:1px solid var(--line); padding:28px 20px 40px;
+  font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+aside .brand{font-weight:700; letter-spacing:.04em; font-size:12px; color:var(--accent);
+  text-transform:uppercase; margin-bottom:4px}
+aside .brand-sub{color:var(--muted); font-size:13px; margin-bottom:20px}
+aside ul{list-style:none; margin:0; padding:0}
+aside ul ul{padding-left:12px; display:none}
+aside li a{display:block; padding:4px 8px; border-radius:6px; color:var(--ink);
+  text-decoration:none}
+aside li a:hover{background:var(--accent-soft)}
+aside li a.active{background:var(--accent-soft); color:var(--accent); font-weight:600}
+main{padding:48px 24px 96px}
+article{max-width:780px; margin:0 auto}
+header.hero{max-width:780px; margin:0 auto 36px; padding-bottom:28px; border-bottom:2px solid var(--ink)}
+.hero .code{font:600 13px/1 system-ui,sans-serif; letter-spacing:.08em; color:var(--accent);
+  text-transform:uppercase}
+.hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.15; margin:12px 0 10px; font-weight:700}
+.hero .meta{font:14px system-ui,sans-serif; color:var(--muted)}
+.hero .meta b{color:var(--ink)}
+h1,h2,h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.25}
+article h1{font-size:26px; margin:64px 0 16px; padding-top:8px}
+article h2{font-size:20px; margin:40px 0 12px; color:var(--accent)}
+article h3{font-size:17px; margin:28px 0 8px}
+article h1.parte{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--warm);
+  margin:72px 0 -36px; padding:0; border-top:2px solid var(--warm); padding-top:10px}
+aside li.parte-item > a{margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--warm); font-weight:700}
+aside li.parte-item > a:hover{background:transparent}
+ul.task-list{list-style:none;padding-left:6px}
+ul.task-list input{margin-right:8px}
+hr{display:none}
+a{color:var(--accent)}
+strong{font-weight:650}
+blockquote{margin:24px 0; padding:14px 18px; background:var(--warm-soft);
+  border-left:4px solid var(--warm); border-radius:0 8px 8px 0}
+blockquote p{margin:.3em 0}
+pre{background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:16px 18px; overflow-x:auto; font:13.5px/1.4 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.9em}
+p code,li code{background:var(--code-bg); padding:1px 5px; border-radius:4px}
+.table-wrap{overflow-x:auto; margin:20px 0}
+table{border-collapse:collapse; width:100%; font:14.5px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+th,td{padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+thead th{background:var(--accent-soft); color:var(--ink); font-weight:650; border-bottom:2px solid var(--accent)}
+tbody tr:hover{background:var(--accent-soft)}
+li{margin:4px 0}
+math[display="block"]{margin:18px 0; font-size:1.15em; overflow-x:auto}
+.menu-btn{display:none}
+@media (max-width:900px){
+  .layout{display:block}
+  aside{position:fixed; inset:0 auto 0 0; width:82%; max-width:320px; z-index:20;
+    transform:translateX(-100%); transition:transform .2s; box-shadow:0 0 30px rgba(0,0,0,.25)}
+  aside.open{transform:none}
+  .menu-btn{display:block; position:fixed; right:16px; bottom:16px; z-index:30;
+    background:var(--accent); color:#fff; border:0; border-radius:999px; padding:12px 18px;
+    font:600 14px system-ui,sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.2)}
+  main{padding:28px 16px 80px}
+}
+@media print{
+  aside,.menu-btn{display:none}
+  .layout{display:block}
+  body{background:#fff; font-size:12pt}
+  pre,table,blockquote{break-inside:avoid}
+  article h1{break-before:page; margin-top:0}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside id="toc">
+  <div class="brand">INRC230002</div>
+  <div class="brand-sub">Redes de Computadores: Acesso à Rede</div>
+  <ul>
+  <li><a href="#apresentação" id="toc-apresentação">1.
+  Apresentação</a></li>
+  <li><a href="#parte-i-dados-e-sinais"
+  id="toc-parte-i-dados-e-sinais">Parte I — Dados e sinais</a></li>
+  <li><a href="#dado-sinal-e-transmissão"
+  id="toc-dado-sinal-e-transmissão">2. Dado, sinal e
+  transmissão</a></li>
+  <li><a href="#por-que-um-canal-deforma-os-sinais-uma-intuição"
+  id="toc-por-que-um-canal-deforma-os-sinais-uma-intuição">3. Por que um
+  canal deforma os sinais? Uma intuição</a></li>
+  <li><a href="#largura-de-banda-duas-palavras-para-duas-coisas"
+  id="toc-largura-de-banda-duas-palavras-para-duas-coisas">4. Largura de
+  banda: duas palavras para duas coisas</a></li>
+  <li><a href="#parte-ii-dos-bits-aos-sinais"
+  id="toc-parte-ii-dos-bits-aos-sinais">Parte II — Dos bits aos
+  sinais</a></li>
+  <li><a href="#codificação-de-linha-banda-base"
+  id="toc-codificação-de-linha-banda-base">5. Codificação de linha
+  (banda base)</a></li>
+  <li><a href="#modulação-banda-passante"
+  id="toc-modulação-banda-passante">6. Modulação (banda
+  passante)</a></li>
+  <li><a href="#símbolos-baud-e-bits" id="toc-símbolos-baud-e-bits">7.
+  Símbolos, baud e bits</a></li>
+  <li><a href="#parte-iii-o-que-degrada-o-sinal"
+  id="toc-parte-iii-o-que-degrada-o-sinal">Parte III — O que degrada o
+  sinal</a></li>
+  <li><a href="#decibéis" id="toc-decibéis">8. Decibéis</a></li>
+  <li><a href="#atenuação-distorção-e-ruído"
+  id="toc-atenuação-distorção-e-ruído">9. Atenuação, distorção e
+  ruído</a></li>
+  <li><a href="#relação-sinal-ruído-snr"
+  id="toc-relação-sinal-ruído-snr">10. Relação sinal-ruído
+  (SNR)</a></li>
+  <li><a href="#parte-iv-os-limites-da-velocidade"
+  id="toc-parte-iv-os-limites-da-velocidade">Parte IV — Os limites da
+  velocidade</a></li>
+  <li><a href="#limite-de-nyquist-canal-sem-ruído"
+  id="toc-limite-de-nyquist-canal-sem-ruído">11. Limite de Nyquist
+  (canal sem ruído)</a></li>
+  <li><a href="#limite-de-shannon-canal-com-ruído"
+  id="toc-limite-de-shannon-canal-com-ruído">12. Limite de Shannon
+  (canal com ruído)</a></li>
+  <li><a href="#parte-v-taxa-atraso-e-vazão"
+  id="toc-parte-v-taxa-atraso-e-vazão">Parte V — Taxa, atraso e
+  vazão</a></li>
+  <li><a href="#os-atrasos-de-uma-transmissão"
+  id="toc-os-atrasos-de-uma-transmissão">13. Os atrasos de uma
+  transmissão</a></li>
+  <li><a href="#taxa-nominal-vazão-e-atraso"
+  id="toc-taxa-nominal-vazão-e-atraso">14. Taxa nominal, vazão e
+  atraso</a></li>
+  <li><a href="#parte-vi-prática" id="toc-parte-vi-prática">Parte VI —
+  Prática</a></li>
+  <li><a href="#roteiro-medindo-o-seu-enlace"
+  id="toc-roteiro-medindo-o-seu-enlace">15. Roteiro: medindo o seu
+  enlace</a></li>
+  <li><a href="#parte-vii-exercícios-de-fixação"
+  id="toc-parte-vii-exercícios-de-fixação">Parte VII — Exercícios de
+  fixação</a></li>
+  <li><a href="#questões-conceituais" id="toc-questões-conceituais">16.
+  Questões conceituais</a></li>
+  <li><a href="#exercícios-de-cálculo"
+  id="toc-exercícios-de-cálculo">17. Exercícios de cálculo</a></li>
+  <li><a href="#gabarito-orientativo" id="toc-gabarito-orientativo">18.
+  Gabarito orientativo</a></li>
+  <li><a href="#parte-viii-síntese-e-planejamento"
+  id="toc-parte-viii-síntese-e-planejamento">Parte VIII — Síntese</a></li>
+  <li><a href="#síntese" id="toc-síntese">19. Síntese</a></li>
+  <li><a href="#para-o-próximo-encontro"
+  id="toc-para-o-próximo-encontro">20. Para o próximo encontro</a></li>
+  <li><a href="#referências" id="toc-referências">21.
+  Referências</a></li>
+  </ul>
+</aside>
+<main>
+  <header class="hero">
+    <div class="code">INRC230002 · Encontro 02</div>
+    <h1>Sinais, Taxas e Transmissão</h1>
+    <div class="meta"><strong>Duração:</strong> 1h30<br><strong>Ferramentas:</strong> discussão e cálculos; linha de comando
+(taxa do enlace, <code>ping</code>, medição de vazão)<br><strong>Referência principal:</strong> TANENBAUM, Andrew S.;
+WETHERALL, David J. <em>Computer Networks</em>. 5. ed. Prentice Hall,
+2011. Capítulo 2 (<em>The Physical Layer</em>): base teórica da
+comunicação de dados, modulação digital.</div>
+  </header>
+  <article>
+<h1 id="apresentação">1. Apresentação</h1>
+<blockquote>
+<p><strong>Retomando o Encontro 01:</strong> no fim do encapsulamento, a
+camada física transmite o quadro como <strong>bits</strong>. E deixamos
+uma pergunta: <strong>o que limita a velocidade de um
+enlace?</strong></p>
+</blockquote>
+<p>Os bits não viajam “como bits”. Um cabo conduz <strong>tensão
+elétrica</strong>, uma fibra conduz <strong>luz</strong>, e o Wi-Fi usa
+<strong>ondas de rádio</strong>. A camada física precisa transformar
+cada <code>0</code> e cada <code>1</code> em uma variação dessas
+grandezas, os <strong>sinais</strong>, e o receptor precisa reconhecer
+essas variações do outro lado, mesmo depois de o sinal enfraquecer e se
+misturar com ruído.</p>
+<p>Neste encontro, vamos entender como isso é feito e quais leis da
+física limitam quantos bits por segundo um canal consegue
+transportar.</p>
+<p><strong>Questão norteadora:</strong> como os bits se transformam em
+sinais, e por que nenhum canal transmite infinitos bits por segundo?</p>
+<h2 id="objetivos-de-aprendizagem">Objetivos de aprendizagem</h2>
+<p>Ao final deste encontro, você deverá ser capaz de:</p>
+<ol type="1">
+<li>diferenciar dado, sinal, sinal analógico e sinal digital;</li>
+<li>explicar, de forma intuitiva, por que um canal com banda limitada
+deforma os sinais;</li>
+<li>diferenciar os dois sentidos de “largura de banda” (Hz e
+bit/s);</li>
+<li>explicar codificações de linha (NRZ, Manchester) e modulações (ASK,
+FSK, PSK, QAM);</li>
+<li>diferenciar <strong>taxa de símbolos</strong> (baud) e <strong>taxa
+de bits</strong>;</li>
+<li>converter razões de potência em decibéis e interpretar atenuação e
+SNR;</li>
+<li>calcular os limites de <strong>Nyquist</strong> e
+<strong>Shannon</strong>;</li>
+<li>calcular atraso de transmissão e de propagação e interpretar o
+RTT;</li>
+<li>diferenciar taxa nominal, vazão (<em>throughput</em>) e atraso;</li>
+<li>medir, na prática, a taxa do enlace, o RTT e a vazão real de uma
+conexão.</li>
+</ol>
+<hr />
+<h1 class="parte" id="parte-i-dados-e-sinais">Parte I — Dados e
+sinais</h1>
+<h1 id="dado-sinal-e-transmissão">2. Dado, sinal e transmissão</h1>
+<ul>
+<li><strong>Dado:</strong> a informação a transmitir; para a camada
+física, uma sequência de bits.</li>
+<li><strong>Sinal:</strong> a grandeza física que varia no tempo para
+representar o dado: tensão, corrente, intensidade de luz, campo
+eletromagnético.</li>
+<li><strong>Transmissão:</strong> o envio do sinal pelo meio.</li>
+</ul>
+<pre class="text"><code>     BITS  ──►  [ codificação / modulação ]  ──►  SINAL  ──►  MEIO  ──►  SINAL RECEBIDO
+                                                                         (mais fraco e
+     BITS  ◄──  [ decodificação / demodulação ] ◄────────────────────────  com ruído)</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Sinal analógico</th>
+<th>Sinal digital</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Valores</td>
+<td>Variam continuamente</td>
+<td>Poucos níveis bem definidos</td>
+</tr>
+<tr class="even">
+<td>Exemplo</td>
+<td>Voz no telefone antigo, onda de rádio</td>
+<td>Níveis de tensão em um cabo de rede</td>
+</tr>
+<tr class="odd">
+<td>Representação</td>
+<td>Curva suave</td>
+<td>“Degraus”</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>ANALÓGICO                              DIGITAL (2 níveis)
+
+   ╭─╮       ╭─╮                       ┌──┐  ┌─────┐     ┌──┐
+  ╱   ╲     ╱   ╲                      │  │  │     │     │  │
+ ╱     ╲   ╱     ╲                   ──┘  └──┘     └─────┘  └──
+        ╰─╯       ╰─                    1  0  1  1  0  0  1  0</code></pre>
+<p>Mesmo os dados digitais acabam transmitidos como sinais que,
+fisicamente, são ondas: no Wi-Fi e na fibra, a informação “viaja” em
+variações de uma onda portadora.</p>
+<h1 id="por-que-um-canal-deforma-os-sinais-uma-intuição">3. Por que um
+canal deforma os sinais? Uma intuição</h1>
+<p>Um resultado matemático importante (a <strong>análise de
+Fourier</strong>) mostra que <strong>qualquer sinal periódico pode ser
+decomposto em uma soma de ondas senoidais</strong> de frequências
+diferentes: uma fundamental e suas <strong>harmônicas</strong>. Um sinal
+com bordas bem “quadradas”, como uma sequência de bits, precisa de
+<strong>muitas</strong> harmônicas para ser reproduzido fielmente.</p>
+<p>Nenhum meio físico deixa passar todas as frequências: cada canal tem
+uma <strong>faixa de frequências</strong> que transmite bem, e as
+frequências fora dela são atenuadas ou cortadas.</p>
+<pre class="text"><code>Sinal enviado:            ┌──┐  ┌─────┐     ┌──┐
+                          │  │  │     │     │  │
+                       ───┘  └──┘     └─────┘  └───
+
+Com poucas harmônicas:     ╭─╮   ╭────╮      ╭─╮
+(canal de banda estreita) ╱   ╲_╱      ╲____╱   ╲___
+                          → bordas arredondadas: o receptor
+                            pode confundir os níveis</code></pre>
+<p><strong>Consequência:</strong> quanto <strong>mais estreita</strong>
+a faixa de frequências do canal, <strong>menos bits por segundo</strong>
+ele consegue transmitir sem que os bits “se borrem” uns nos outros. Esse
+é o primeiro limite à velocidade de um enlace.</p>
+<h1 id="largura-de-banda-duas-palavras-para-duas-coisas">4. Largura de
+banda: duas palavras para duas coisas</h1>
+<p>A expressão “largura de banda” é usada com dois sentidos
+diferentes:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Sentido</th>
+<th>Unidade</th>
+<th>O que mede</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Engenharia</strong></td>
+<td><strong>hertz (Hz)</strong></td>
+<td>A <strong>faixa de frequências</strong> que o canal transmite
+bem</td>
+<td>“Este canal Wi-Fi tem 20 MHz de largura”</td>
+</tr>
+<tr class="even">
+<td><strong>Uso popular</strong></td>
+<td><strong>bit/s</strong></td>
+<td>A <strong>taxa</strong> de dados de uma conexão</td>
+<td>“Minha banda larga é de 300 mega”</td>
+</tr>
+</tbody>
+</table>
+<p>As duas estão ligadas (mais hertz permitem mais bits por segundo,
+como veremos com Nyquist e Shannon), mas <strong>não são a mesma
+coisa</strong>. Neste curso, usaremos <strong>largura de banda</strong>
+para hertz e <strong>taxa</strong> para bit/s.</p>
+<h2 id="unidades">4.1 Unidades</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Grandeza</th>
+<th>Unidade</th>
+<th>Observação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Taxa de bits</td>
+<td>bit/s, kbit/s, Mbit/s, Gbit/s</td>
+<td>Prefixos <strong>decimais</strong>: 1 kbit/s = 1.000 bit/s</td>
+</tr>
+<tr class="even">
+<td>Tamanho de arquivo</td>
+<td>byte (B), kB, MB, GB</td>
+<td>1 byte = <strong>8 bits</strong></td>
+</tr>
+<tr class="odd">
+<td>Frequência</td>
+<td>Hz, kHz, MHz, GHz</td>
+<td>Ciclos por segundo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Atenção às letras:</strong> <code>b</code> minúsculo é
+<strong>bit</strong>; <code>B</code> maiúsculo é <strong>byte</strong>.
+Um plano de Internet de <strong>100 Mbit/s</strong> entrega, no máximo,
+100 / 8 = <strong>12,5 MB/s</strong> em um download.</p>
+<hr />
+<h1 class="parte" id="parte-ii-dos-bits-aos-sinais">Parte II — Dos bits
+aos sinais</h1>
+<h1 id="codificação-de-linha-banda-base">5. Codificação de linha (banda
+base)</h1>
+<p>Em cabos de cobre, os bits costumam ser enviados diretamente como
+<strong>níveis de tensão</strong>. A regra que associa bits a níveis é a
+<strong>codificação de linha</strong>.</p>
+<pre class="text"><code>Bits:          1     0     1     1     0     0     0     1
+
+NRZ          ┌─────┐     ┌───────────┐                 ┌─────
+(1 = alto,   │     │     │           │                 │
+ 0 = baixo) ─┘     └─────┘           └─────────────────┘
+
+Manchester   ┐  ┌──┐  ┌──┐  ┐  ┌──┐  ┌──┐  ┌──┐  ┐  ┌──
+(transição   │  │  │  │  │  │  │  │  │  │  │  │  │  │  │
+ no meio     └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘
+ de cada bit)</code></pre>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Código</th>
+<th>Ideia</th>
+<th>Vantagem</th>
+<th>Desvantagem</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>NRZ</strong></td>
+<td>1 = nível alto, 0 = nível baixo</td>
+<td>Simples; usa pouca banda</td>
+<td>Longas sequências de 0 ou de 1 viram uma linha reta, e o receptor
+<strong>perde a sincronia</strong> do relógio</td>
+</tr>
+<tr class="even">
+<td><strong>Manchester</strong></td>
+<td>Cada bit tem uma <strong>transição no meio</strong> (o sentido da
+transição indica 0 ou 1)</td>
+<td>O relógio vem “embutido” no sinal</td>
+<td>Precisa do <strong>dobro</strong> da banda</td>
+</tr>
+<tr class="odd">
+<td><strong>4B/5B</strong></td>
+<td>Cada grupo de 4 bits vira um código de 5 bits, escolhido para ter
+transições suficientes</td>
+<td>Sincronia com só 25% a mais de bits</td>
+<td>Mais complexo</td>
+</tr>
+</tbody>
+</table>
+<p>A Ethernet clássica de 10 Mbit/s usava <strong>Manchester</strong>; a
+de 100 Mbit/s (100BASE-TX) usa <strong>4B/5B</strong>. Repare: o
+problema da sincronia (o receptor precisa saber <strong>onde começa e
+termina cada bit</strong>) reaparece em outra escala no Encontro 04,
+quando a camada de enlace precisar saber onde começa e termina cada
+<strong>quadro</strong>.</p>
+<h1 id="modulação-banda-passante">6. Modulação (banda passante)</h1>
+<p>No rádio e em vários outros meios, os bits não são enviados como
+degraus, e sim como alterações de uma <strong>onda portadora</strong> de
+alta frequência. Alterar a portadora para carregar informação é
+<strong>modular</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Modulação</th>
+<th>O que muda na portadora</th>
+<th>Ideia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>ASK</strong> (amplitude)</td>
+<td>A <strong>altura</strong> da onda</td>
+<td>Onda forte = 1; onda fraca (ou ausente) = 0</td>
+</tr>
+<tr class="even">
+<td><strong>FSK</strong> (frequência)</td>
+<td>A <strong>frequência</strong></td>
+<td>Uma frequência para 0, outra para 1</td>
+</tr>
+<tr class="odd">
+<td><strong>PSK</strong> (fase)</td>
+<td>A <strong>fase</strong> (o “ponto de partida” da onda)</td>
+<td>A onda “pula” de posição para indicar o bit</td>
+</tr>
+<tr class="even">
+<td><strong>QAM</strong> (amplitude e fase)</td>
+<td>Amplitude <strong>e</strong> fase ao mesmo tempo</td>
+<td>Cada combinação representa vários bits</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>Bits:   1        0        1        1
+ASK   ∿∿∿∿     ────     ∿∿∿∿     ∿∿∿∿        (há onda / não há onda)
+FSK   ∿∿∿∿     ~ ~      ∿∿∿∿     ∿∿∿∿        (rápida / lenta)
+PSK   ∿∿∿∿     ∾∾∾∾     ∿∿∿∿     ∿∿∿∿        (fase normal / invertida)</code></pre>
+<p>A <strong>fibra óptica</strong> usa, no caso mais simples, uma forma
+de ASK: luz acesa ou apagada (Encontro 03).</p>
+<h1 id="símbolos-baud-e-bits">7. Símbolos, baud e bits</h1>
+<p>Um <strong>símbolo</strong> é cada “forma de onda” distinta que o
+transmissor pode enviar em um intervalo de tempo. Se houver só 2
+símbolos possíveis, cada um carrega 1 bit. Se houver 4, cada um carrega
+2 bits; se houver 16, 4 bits.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">bits por símbolo</mtext><mo>=</mo><msub><mo>log</mo><mn>2</mn></msub><mi>V</mi><mspace width="2.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo>=</mo><mtext mathvariant="normal">número de símbolos possíveis</mtext><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\text{bits por símbolo} = \log_2 V \qquad (V = \text{número de símbolos possíveis})
+</annotation></semantics></math></p>
+<ul>
+<li><strong>Taxa de símbolos</strong> (<em>baud</em>): quantos símbolos
+são enviados por segundo.</li>
+<li><strong>Taxa de bits</strong> (bit/s): baud × bits por símbolo.</li>
+</ul>
+<p><strong>Exemplo:</strong> um modem envia 2.400 símbolos por segundo
+usando <strong>QAM-16</strong> (16 combinações de amplitude e fase).
+Cada símbolo carrega log₂ 16 = 4 bits. Taxa de bits: 2.400 × 4 =
+<strong>9.600 bit/s</strong>.</p>
+<pre class="text"><code>QPSK / 4-QAM: 4 símbolos, 2 bits cada      QAM-16: 16 símbolos, 4 bits cada
+
+            Q                                       Q
+       01   │   00                            ·  ·  │  ·  ·
+        ●   │   ●                             ·  ·  │  ·  ·
+   ─────────┼───────── I                   ─────────┼───────── I
+        ●   │   ●                             ·  ·  │  ·  ·
+       11   │   10                            ·  ·  │  ·  ·</code></pre>
+<p>Esses diagramas, chamados <strong>constelações</strong>, mostram cada
+símbolo como um ponto. Mais pontos significam <strong>mais bits por
+símbolo</strong>, mas também pontos <strong>mais próximos uns dos
+outros</strong>: com um pouco de ruído, o receptor confunde um ponto com
+o vizinho. Por isso, o Wi-Fi usa constelações densas (QAM-256,
+QAM-1024…) quando o sinal está forte e <strong>muda para constelações
+menores</strong> quando o sinal enfraquece (Encontro 03, seção 34).</p>
+<hr />
+<h1 class="parte" id="parte-iii-o-que-degrada-o-sinal">Parte III — O que
+degrada o sinal</h1>
+<h1 id="decibéis">8. Decibéis</h1>
+<p>Em telecomunicações, razões entre potências variam enormemente (de 1
+para 1 bilhão). Por isso, usa-se uma escala logarítmica, o
+<strong>decibel (dB)</strong>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">razão em dB</mtext><mo>=</mo><mn>10</mn><msub><mo>log</mo><mn>10</mn></msub><mfrac><msub><mi>P</mi><mn>1</mn></msub><msub><mi>P</mi><mn>2</mn></msub></mfrac></mrow><annotation encoding="application/x-tex">
+\text{razão em dB} = 10 \log_{10} \frac{P_1}{P_2}
+</annotation></semantics></math></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Razão de potências</th>
+<th style="text-align: right;">Em dB</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">≈ 3 dB</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10 dB</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">20 dB</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">30 dB</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.000.000</td>
+<td style="text-align: right;">60 dB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regra prática:</strong> cada <strong>10 dB</strong> é um
+fator de <strong>10</strong>; cada <strong>3 dB</strong>, um fator de
+<strong>2</strong>. Somar decibéis equivale a multiplicar as razões.</p>
+<p>Potências absolutas costumam ser dadas em <strong>dBm</strong>
+(decibéis em relação a 1 mW): 0 dBm = 1 mW; 20 dBm = 100 mW; −70 dBm =
+0,0000001 mW. O seu celular mostra a intensidade do Wi-Fi nessa
+escala.</p>
+<h1 id="atenuação-distorção-e-ruído">9. Atenuação, distorção e
+ruído</h1>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problema</th>
+<th>O que é</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Atenuação</strong></td>
+<td>O sinal <strong>perde potência</strong> com a distância</td>
+<td>Um cabo que perde 20 dB entrega 1/100 da potência</td>
+</tr>
+<tr class="even">
+<td><strong>Distorção</strong></td>
+<td>Frequências diferentes sofrem atenuações e atrasos diferentes, e o
+sinal muda de <strong>forma</strong></td>
+<td>Bordas arredondadas (seção 3)</td>
+</tr>
+<tr class="odd">
+<td><strong>Ruído</strong></td>
+<td>Energia <strong>indesejada</strong> que se soma ao sinal</td>
+<td>Ruído térmico, interferência de motores, de outros cabos
+(<em>crosstalk</em>), de outras redes Wi-Fi</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>Enviado:   ┌──┐  ┌─────┐            Recebido:   ╭╮   ╭────╮        ← menor (atenuação),
+           │  │  │     │                       ╱╲╱╲_╱╲/╲/╲╲         arredondado (distorção)
+        ───┘  └──┘     └───                 _╱              ╲__   e &quot;tremido&quot; (ruído)</code></pre>
+<p>Por isso, todo meio tem um <strong>alcance máximo</strong>: o cabo de
+rede, 100 m; a fibra multimodo, centenas de metros; o Wi-Fi, dezenas de
+metros (Encontro 03).</p>
+<h1 id="relação-sinal-ruído-snr">10. Relação sinal-ruído (SNR)</h1>
+<p>O que importa para o receptor não é a potência do sinal sozinha, mas
+<strong>quanto o sinal está acima do ruído</strong>: a <strong>relação
+sinal-ruído</strong> (SNR, <em>Signal-to-Noise Ratio</em>).</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">SNR</mtext><mo>=</mo><mfrac><mtext mathvariant="normal">potência do sinal</mtext><mtext mathvariant="normal">potência do ruído</mtext></mfrac><mspace width="2.0em"></mspace><msub><mtext mathvariant="normal">SNR</mtext><mtext mathvariant="normal">dB</mtext></msub><mo>=</mo><mn>10</mn><msub><mo>log</mo><mn>10</mn></msub><mtext mathvariant="normal">SNR</mtext></mrow><annotation encoding="application/x-tex">
+\text{SNR} = \frac{\text{potência do sinal}}{\text{potência do ruído}} \qquad \text{SNR}_{\text{dB}} = 10 \log_{10} \text{SNR}
+</annotation></semantics></math></p>
+<p><strong>Exemplo:</strong> o Wi-Fi recebe o sinal do AP com −65 dBm, e
+o ruído no local é de −90 dBm. SNR = −65 − (−90) = <strong>25
+dB</strong> (o sinal é cerca de 316 vezes mais forte que o ruído).</p>
+<p>Quanto <strong>maior</strong> o SNR, mais fácil distinguir os
+símbolos e mais bits por símbolo podem ser usados.</p>
+<hr />
+<h1 class="parte" id="parte-iv-os-limites-da-velocidade">Parte IV — Os
+limites da velocidade</h1>
+<h1 id="limite-de-nyquist-canal-sem-ruído">11. Limite de Nyquist (canal
+sem ruído)</h1>
+<p>Em 1924, Harry Nyquist mostrou que um canal com largura de banda
+<strong>B</strong> hertz consegue transportar, no máximo, <strong>2B
+símbolos por segundo</strong>. Com <strong>V</strong> símbolos
+possíveis:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">taxa máxima</mtext><mo>=</mo><mn>2</mn><mi>B</mi><msub><mo>log</mo><mn>2</mn></msub><mi>V</mi><mspace width="1.0em"></mspace><mtext mathvariant="normal">bit/s</mtext></mrow><annotation encoding="application/x-tex">
+\text{taxa máxima} = 2B \log_2 V \quad \text{bit/s}
+</annotation></semantics></math></p>
+<p><strong>Exemplo:</strong> um canal telefônico de 3.000 Hz:</p>
+<ul>
+<li>com 2 níveis: 2 × 3.000 × log₂ 2 = <strong>6.000
+bit/s</strong>;</li>
+<li>com 16 níveis: 2 × 3.000 × log₂ 16 = <strong>24.000
+bit/s</strong>.</li>
+</ul>
+<p>Nyquist parece dizer que basta aumentar o número de níveis para
+aumentar a taxa sem limite. O que impede isso é o
+<strong>ruído</strong>.</p>
+<h1 id="limite-de-shannon-canal-com-ruído">12. Limite de Shannon (canal
+com ruído)</h1>
+<p>Em 1948, Claude Shannon mostrou que, em um canal com largura de banda
+<strong>B</strong> e relação sinal-ruído <strong>SNR</strong> (como
+razão, não em dB), existe uma taxa máxima que <strong>nenhuma</strong>
+técnica consegue ultrapassar:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mi>B</mi><msub><mo>log</mo><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mtext mathvariant="normal">SNR</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="1.0em"></mspace><mtext mathvariant="normal">bit/s</mtext></mrow><annotation encoding="application/x-tex">
+C = B \log_2 (1 + \text{SNR}) \quad \text{bit/s}
+</annotation></semantics></math></p>
+<p><strong>Exemplo (Tanenbaum):</strong> canal telefônico de 3.000 Hz
+com SNR de 30 dB (razão de 1.000):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mn>3000</mn><mo>×</mo><msub><mo>log</mo><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>1000</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>≈</mo><mn>3000</mn><mo>×</mo><mtext mathvariant="normal">9,97</mtext><mo>≈</mo><mtext mathvariant="normal">29,9 kbit/s</mtext></mrow><annotation encoding="application/x-tex">
+C = 3000 \times \log_2(1 + 1000) \approx 3000 \times \text{9,97} \approx \text{29,9 kbit/s}
+</annotation></semantics></math></p>
+<p>Por isso, os modems de linha telefônica pararam perto de 33,6 kbit/s:
+estavam no limite de Shannon.</p>
+<p><strong>Exemplo Wi-Fi:</strong> um canal de 20 MHz com SNR de 25 dB
+(≈ 316):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mn>20</mn><mo>×</mo><msup><mn>10</mn><mn>6</mn></msup><mo>×</mo><msub><mo>log</mo><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>317</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>≈</mo><mn>166</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Mbit/s</mtext></mrow></mrow><annotation encoding="application/x-tex">
+C = 20 \times 10^6 \times \log_2(317) \approx 166 \text{ Mbit/s}
+</annotation></semantics></math></p>
+<p>Se o celular se afastar e o SNR cair para 10 dB (razão de 10), o
+limite cai para cerca de <strong>69 Mbit/s</strong>.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Para aumentar a capacidade…</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Aumentar a largura de banda (B)</strong></td>
+<td>Canais Wi-Fi de 80 ou 160 MHz em vez de 20 MHz; fibra óptica, que
+tem enorme largura de banda</td>
+</tr>
+<tr class="even">
+<td><strong>Aumentar o SNR</strong></td>
+<td>Aproximar-se do AP; usar cabos blindados; reduzir interferência</td>
+</tr>
+<tr class="odd">
+<td>Usar vários canais em paralelo</td>
+<td>MIMO (várias antenas) no Wi-Fi</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nyquist × Shannon:</strong> Nyquist diz quantos
+<strong>símbolos</strong> cabem no canal; Shannon diz quantos
+<strong>bits</strong> podem ser extraídos deles, dado o ruído. O limite
+real é o <strong>menor</strong> dos dois.</p>
+<hr />
+<h1 class="parte" id="parte-v-taxa-atraso-e-vazão">Parte V — Taxa,
+atraso e vazão</h1>
+<h1 id="os-atrasos-de-uma-transmissão">13. Os atrasos de uma
+transmissão</h1>
+<p>Para um pacote ir de um ponto a outro, ele sofre quatro atrasos:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Atraso</th>
+<th>O que é</th>
+<th>Depende de</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Processamento</strong></td>
+<td>Tempo para o equipamento examinar o pacote</td>
+<td>Equipamento (microssegundos)</td>
+</tr>
+<tr class="even">
+<td><strong>Fila</strong></td>
+<td>Espera atrás de outros pacotes</td>
+<td>Congestionamento (varia muito)</td>
+</tr>
+<tr class="odd">
+<td><strong>Transmissão</strong></td>
+<td>Tempo para <strong>colocar todos os bits</strong> no enlace</td>
+<td>Tamanho do pacote e <strong>taxa</strong> do enlace</td>
+</tr>
+<tr class="even">
+<td><strong>Propagação</strong></td>
+<td>Tempo para um bit <strong>viajar</strong> de uma ponta à outra</td>
+<td><strong>Distância</strong> e velocidade no meio</td>
+</tr>
+</tbody>
+</table>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mtext mathvariant="normal">transmissão</mtext></msub><mo>=</mo><mfrac><mi>L</mi><mi>R</mi></mfrac><mspace width="2.0em"></mspace><mspace width="2.0em"></mspace><msub><mi>t</mi><mtext mathvariant="normal">propagação</mtext></msub><mo>=</mo><mfrac><mi>d</mi><mi>v</mi></mfrac></mrow><annotation encoding="application/x-tex">
+t_{\text{transmissão}} = \frac{L}{R} \qquad\qquad t_{\text{propagação}} = \frac{d}{v}
+</annotation></semantics></math></p>
+<p>(<strong>L</strong> = tamanho em bits; <strong>R</strong> = taxa em
+bit/s; <strong>d</strong> = distância; <strong>v</strong> ≈ 2 × 10⁸ m/s
+no cobre e na fibra, cerca de 2/3 da velocidade da luz.)</p>
+<p><strong>Analogia:</strong> um comboio de 10 carros passando por um
+pedágio. O tempo para <strong>todos os carros passarem pela
+cancela</strong> é a transmissão; o tempo para <strong>cada carro rodar
+até a próxima cidade</strong> é a propagação. Um enlace mais
+<strong>rápido</strong> (taxa maior) reduz a transmissão, mas
+<strong>não</strong> a propagação: nenhum cabo faz os bits viajarem mais
+depressa que a física permite.</p>
+<p><strong>Exemplos:</strong></p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situação</th>
+<th>Cálculo</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Quadro de 1.500 bytes em 100 Mbit/s</td>
+<td>12.000 / 100 × 10⁶</td>
+<td>120 µs de transmissão</td>
+</tr>
+<tr class="even">
+<td>O mesmo quadro em 1 Gbit/s</td>
+<td>12.000 / 10⁹</td>
+<td>12 µs</td>
+</tr>
+<tr class="odd">
+<td>3.000 km de fibra</td>
+<td>3 × 10⁶ / 2 × 10⁸</td>
+<td>15 ms de propagação</td>
+</tr>
+<tr class="even">
+<td>São Paulo → Lisboa (≈ 7.900 km)</td>
+<td>7,9 × 10⁶ / 2 × 10⁸</td>
+<td>≈ 40 ms; RTT de pelo menos <strong>79 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Por isso, no Encontro 01, o <code>ping</code> para um site de outro
+continente demorou muito mais que o <code>ping</code> para o gateway: a
+<strong>propagação</strong> domina, e nenhuma internet “mais rápida”
+muda isso.</p>
+<h1 id="taxa-nominal-vazão-e-atraso">14. Taxa nominal, vazão e
+atraso</h1>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Grandeza</th>
+<th>O que é</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Taxa nominal</strong> (taxa do enlace)</td>
+<td>Quantos bits por segundo a camada física transmite</td>
+<td>“Conectado a 1 Gbit/s”; “Wi-Fi a 433 Mbit/s”</td>
+</tr>
+<tr class="even">
+<td><strong>Vazão</strong> (<em>throughput</em>)</td>
+<td>Quantos bits <strong>úteis</strong> por segundo chegam de fato à
+aplicação</td>
+<td>Download real de 85 Mbit/s</td>
+</tr>
+<tr class="odd">
+<td><strong>Atraso / RTT</strong></td>
+<td>Quanto tempo a informação leva para ir (e voltar)</td>
+<td><code>ping</code> de 14 ms</td>
+</tr>
+</tbody>
+</table>
+<p>A vazão é sempre <strong>menor</strong> que a taxa nominal: parte da
+capacidade vai para cabeçalhos, confirmações, retransmissões, disputa
+pelo meio e compartilhamento com outros usuários. E a vazão de ponta a
+ponta é limitada pelo <strong>enlace mais lento</strong> do caminho (o
+“gargalo”): um notebook ligado a 1 Gbit/s em um plano de 100 Mbit/s não
+baixa a mais de 100 Mbit/s.</p>
+<p><strong>Taxa e atraso são coisas diferentes:</strong> um enlace pode
+ter taxa altíssima e atraso grande (um enlace de satélite) ou taxa baixa
+e atraso pequeno. Para um jogo online, o atraso pesa mais; para baixar
+um arquivo grande, a taxa pesa mais.</p>
+<h2 id="o-produto-banda-atraso">14.1 O produto banda × atraso</h2>
+<p>Quantos bits “cabem” dentro do cabo ao mesmo tempo? O <strong>produto
+taxa × atraso</strong>:</p>
+<p><strong>Exemplo:</strong> um enlace de 1 Gbit/s com RTT de 80 ms: 10⁹
+× 0,08 = 80 Mbit = <strong>10 MB</strong> “em voo” ao mesmo tempo. Um
+protocolo que envia um pouco e espera confirmação antes de continuar
+desperdiça quase toda essa capacidade, e é exatamente esse problema que
+veremos no Encontro 04 (controle de fluxo e janela deslizante).</p>
+<hr />
+<h1 class="parte" id="parte-vi-prática">Parte VI — Prática</h1>
+<h1 id="roteiro-medindo-o-seu-enlace">15. Roteiro: medindo o seu
+enlace</h1>
+<p><strong>Tempo previsto:</strong> cerca de 25 minutos.
+<strong>Como fazer:</strong> em dupla.</p>
+<h2 id="parte-1-qual-é-a-taxa-do-meu-enlace-5-min">Parte 1 — Qual é a
+taxa do meu enlace? (5 min)</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Sistema</th>
+<th>Cabo</th>
+<th>Wi-Fi</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Windows (PowerShell)</td>
+<td><code>Get-NetAdapter \| Select Name, LinkSpeed</code></td>
+<td><code>netsh wlan show interfaces</code> (taxa de
+recepção/transmissão e sinal)</td>
+</tr>
+<tr class="even">
+<td>Linux</td>
+<td><code>cat /sys/class/net/&lt;interface&gt;/speed</code> ou
+<code>ethtool &lt;interface&gt;</code></td>
+<td><code>iw dev &lt;interface&gt; link</code> (taxa e sinal em
+dBm)</td>
+</tr>
+</tbody>
+</table>
+<p>Anote a <strong>taxa nominal</strong> e, no Wi-Fi, a
+<strong>intensidade do sinal</strong>.</p>
+<h2 id="parte-2-propagação-na-prática-10-min">Parte 2 — Propagação na
+prática (10 min)</h2>
+<ol type="1">
+<li>Faça <code>ping</code> para o <strong>gateway</strong> e para os
+sites indicados pelo professor (um no Brasil e um em outro continente).
+Anote o <strong>menor</strong> RTT de cada um.</li>
+<li>Usando v = 2 × 10⁸ m/s, calcule a <strong>distância máxima</strong>
+que o sinal poderia ter percorrido (ida e volta) em cada caso: d = v ×
+RTT / 2.</li>
+<li>Compare com a distância geográfica real. Por que o valor calculado é
+maior?</li>
+</ol>
+<h2 id="parte-3-vazão-real-10-min">Parte 3 — Vazão real (10 min)</h2>
+<ol type="1">
+<li>Baixe o arquivo de teste indicado pelo professor (ou use um teste de
+velocidade) e anote o <strong>tamanho</strong> e o
+<strong>tempo</strong>.</li>
+<li>Calcule a vazão: tamanho em bits / tempo.</li>
+<li>Compare com a taxa nominal da Parte 1 e com o plano de Internet da
+instituição.</li>
+</ol>
+<p><strong>Perguntas para o roteiro:</strong></p>
+<ol type="1">
+<li>Qual foi a taxa nominal do seu enlace? E a vazão medida? Qual a
+razão entre elas?</li>
+<li>Onde está o <strong>gargalo</strong> do caminho: no seu enlace, na
+rede da instituição ou no servidor?</li>
+<li>Por que o RTT para outro continente não diminuiria se a sua placa de
+rede fosse de 10 Gbit/s?</li>
+<li>(Wi-Fi) Afaste-se do AP e repita a Parte 1. A taxa nominal mudou?
+Relacione com o SNR e com Shannon.</li>
+</ol>
+<hr />
+<h1 class="parte" id="parte-vii-exercícios-de-fixação">Parte VII —
+Exercícios de fixação</h1>
+<h1 id="questões-conceituais">16. Questões conceituais</h1>
+<ol type="1">
+<li>Diferencie dado e sinal; sinal analógico e digital.</li>
+<li>Por que um canal com largura de banda limitada deforma uma sequência
+de bits?</li>
+<li>Quais são os dois sentidos de “largura de banda”? Em que unidade
+cada um é medido?</li>
+<li>Qual o problema da codificação NRZ em longas sequências de zeros?
+Como o Manchester o resolve, e a que custo?</li>
+<li>Diferencie ASK, FSK e PSK. O que a QAM combina?</li>
+<li>Diferencie baud e bit/s.</li>
+<li>Por que constelações com muitos pontos exigem um SNR alto?</li>
+<li>O que é atenuação? O que é ruído? Por que eles limitam o alcance de
+um meio?</li>
+<li>O que diz o teorema de Nyquist? E o de Shannon? Por que o limite
+real é o menor dos dois?</li>
+<li>Cite duas formas de aumentar a capacidade de um canal, segundo
+Shannon.</li>
+<li>Diferencie atraso de transmissão e de propagação. Qual deles diminui
+com um enlace mais rápido?</li>
+<li>Diferencie taxa nominal, vazão e atraso.</li>
+<li>O que é o gargalo de um caminho?</li>
+</ol>
+<h1 id="exercícios-de-cálculo">17. Exercícios de cálculo</h1>
+<p><strong>A.</strong> Converta em dB: razão de potências de 100; de 2;
+de 10.000.</p>
+<p><strong>B.</strong> Um sinal chega com −60 dBm, e o ruído é de −85
+dBm. Qual o SNR em dB? E como razão?</p>
+<p><strong>C.</strong> Um sistema envia 4.800 baud com QAM-64. Qual a
+taxa de bits?</p>
+<p><strong>D.</strong> Pelo limite de Nyquist, qual a taxa máxima de um
+canal de 4 kHz com 8 níveis?</p>
+<p><strong>E.</strong> Pelo limite de Shannon, qual a capacidade de um
+canal de 1 MHz com SNR de 20 dB?</p>
+<p><strong>F.</strong> Quanto tempo leva para
+<strong>transmitir</strong> um quadro de 1.000 bytes em um enlace de 10
+Mbit/s? E para ele se <strong>propagar</strong> por 200 m de cabo?</p>
+<p><strong>G.</strong> Um plano de Internet de 300 Mbit/s: em quanto
+tempo, no mínimo, se baixa um arquivo de 1,5 GB?</p>
+<h1 id="gabarito-orientativo">18. Gabarito orientativo</h1>
+<p><strong>Questões:</strong> (1) Dado é a informação; sinal, a grandeza
+física que a representa; analógico varia continuamente, digital tem
+níveis definidos. (2) Faltam as harmônicas que formam as bordas, e os
+níveis se borram. (3) Hz (faixa de frequências) e bit/s (taxa). (4)
+Linha reta sem transições, e o receptor perde o relógio; Manchester faz
+uma transição por bit, mas exige o dobro da banda. (5) Amplitude,
+frequência, fase; QAM combina amplitude e fase. (6) Baud = símbolos/s;
+bit/s = baud × bits por símbolo. (7) Pontos próximos são confundidos
+pelo ruído. (8) Perda de potência com a distância; energia indesejada; o
+sinal acaba indistinguível do ruído. (9) Nyquist: 2B log₂V sem ruído;
+Shannon: B log₂(1 + SNR) com ruído; o canal precisa respeitar as duas
+restrições. (10) Aumentar B ou o SNR. (11) Transmissão = L/R; propagação
+= d/v; só a de transmissão diminui. (12) Taxa: bits/s da camada física;
+vazão: bits úteis/s que chegam; atraso: tempo de chegada. (13) O enlace
+mais lento do caminho, que limita a vazão total.</p>
+<p><strong>A.</strong> 20 dB; ≈ 3 dB; 40 dB.</p>
+<p><strong>B.</strong> 25 dB; ≈ 316.</p>
+<p><strong>C.</strong> log₂ 64 = 6 bits; 4.800 × 6 = <strong>28.800
+bit/s</strong>.</p>
+<p><strong>D.</strong> 2 × 4.000 × log₂ 8 = 2 × 4.000 × 3 =
+<strong>24.000 bit/s</strong>.</p>
+<p><strong>E.</strong> 20 dB = razão de 100; 10⁶ × log₂ 101 ≈ 10⁶ × 6,66
+≈ <strong>6,66 Mbit/s</strong>.</p>
+<p><strong>F.</strong> Transmissão: 8.000 / 10⁷ = <strong>0,8
+ms</strong>; propagação: 200 / (2 × 10⁸) = <strong>1 µs</strong>.</p>
+<p><strong>G.</strong> 1,5 GB = 12 Gbit; 12 × 10⁹ / 300 × 10⁶ =
+<strong>40 s</strong>.</p>
+<p><strong>Roteiro (orientações):</strong> (1) a vazão é sempre menor
+que a taxa nominal. (2) Em geral, o plano de Internet ou o servidor. (3)
+Porque o RTT é dominado pela propagação, que depende da distância, não
+da taxa. (4) A taxa cai com o SNR: o Wi-Fi passa a usar constelações
+menores, como prevê Shannon.</p>
+<hr />
+<h1 class="parte" id="parte-viii-síntese-e-planejamento">Parte VIII —
+Síntese</h1>
+<h1 id="síntese">19. Síntese</h1>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Conceito</th>
+<th>Ideia principal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sinal</td>
+<td>Grandeza física que varia para representar os bits</td>
+</tr>
+<tr class="even">
+<td>Banda limitada</td>
+<td>Corta harmônicas e borra os bits</td>
+</tr>
+<tr class="odd">
+<td>Largura de banda</td>
+<td>Hz (faixa de frequências) ≠ bit/s (taxa)</td>
+</tr>
+<tr class="even">
+<td>Codificação de linha</td>
+<td>NRZ, Manchester, 4B/5B: bits como níveis, com sincronia</td>
+</tr>
+<tr class="odd">
+<td>Modulação</td>
+<td>ASK, FSK, PSK, QAM: bits como alterações de uma portadora</td>
+</tr>
+<tr class="even">
+<td>Baud × bit/s</td>
+<td>bit/s = baud × log₂(número de símbolos)</td>
+</tr>
+<tr class="odd">
+<td>dB</td>
+<td>Escala logarítmica: 10 dB = ×10; 3 dB = ×2</td>
+</tr>
+<tr class="even">
+<td>Atenuação, distorção, ruído</td>
+<td>O que degrada o sinal e limita o alcance</td>
+</tr>
+<tr class="odd">
+<td>Nyquist</td>
+<td>2B log₂V (sem ruído)</td>
+</tr>
+<tr class="even">
+<td>Shannon</td>
+<td>B log₂(1 + SNR) (com ruído)</td>
+</tr>
+<tr class="odd">
+<td>Atrasos</td>
+<td>Processamento, fila, transmissão (L/R), propagação (d/v)</td>
+</tr>
+<tr class="even">
+<td>Vazão</td>
+<td>Sempre menor que a taxa nominal; limitada pelo gargalo</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>BIT ──► SÍMBOLO ──► SINAL ──► MEIO ──► SINAL RECEBIDO ──► SÍMBOLO ──► BIT
+                               │         (atenuado, distorcido, com ruído)
+                    largura de banda (Hz) e SNR
+                    limitam a taxa máxima (Nyquist, Shannon)</code></pre>
+<h1 id="para-o-próximo-encontro">20. Para o próximo encontro</h1>
+<p>Vimos <strong>como</strong> os bits viram sinais e o que limita a
+taxa de um canal. Falta a pergunta que dá nome ao Encontro 03:</p>
+<blockquote>
+<p><strong>Por onde esses sinais são transmitidos?</strong></p>
+</blockquote>
+<p>O cabo que liga seu computador ao switch, a fibra que chega à sua
+casa e o Wi-Fi do celular fazem a mesma coisa: levam bits de um ponto a
+outro. Por que, então, precisamos de três tecnologias tão diferentes? No
+<strong>Encontro 03</strong>, vamos estudar os <strong>meios de
+transmissão</strong>.</p>
+<h1 id="referências">21. Referências</h1>
+<p>TANENBAUM, Andrew S.; WETHERALL, David J. <strong>Computer
+Networks</strong>. 5. ed. Boston: Prentice Hall, 2011. Capítulo 2 —
+<em>The Physical Layer</em> (análise de Fourier, sinais de banda
+limitada, taxa máxima de um canal: Nyquist e Shannon, modulação
+digital).</p>
+<p>KUROSE, James F.; ROSS, Keith W. <strong>Redes de computadores e a
+Internet: uma abordagem top-down</strong>. São Paulo: Pearson. (Capítulo
+1: atraso, perda e vazão em redes de comutação de pacotes.)</p>
+<blockquote>
+<p><strong>Observação:</strong> a análise de Fourier é apresentada
+apenas de forma intuitiva. Os diagramas de sinais são simplificados. As
+velocidades de propagação são aproximadas (cerca de 2/3 da velocidade da
+luz no cobre e na fibra).</p>
+</blockquote>
+  </article>
+</main>
+</div>
+<button class="menu-btn" id="menuBtn" aria-label="Abrir sumário">☰ Sumário</button>
+<script>
+(function(){
+  document.querySelectorAll('article table').forEach(function(t){
+    var w=document.createElement('div'); w.className='table-wrap';
+    t.parentNode.insertBefore(w,t); w.appendChild(t);
+  });
+  document.querySelectorAll('article h1.parte').forEach(function(h){
+    var a=document.querySelector('aside a[href="#'+h.id+'"]'); if(a) a.parentNode.classList.add('parte-item');
+  });
+  var toc=document.getElementById('toc'), btn=document.getElementById('menuBtn');
+  btn.addEventListener('click',function(){toc.classList.toggle('open')});
+  toc.addEventListener('click',function(e){ if(e.target.tagName==='A') toc.classList.remove('open') });
+  var links=[].slice.call(toc.querySelectorAll('a'));
+  var map={}; links.forEach(function(a){ map[decodeURIComponent(a.getAttribute('href').slice(1))]=a });
+  var heads=[].slice.call(document.querySelectorAll('article h1[id]'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){l.classList.remove('active')});
+          var a=map[e.target.id]; if(a){a.classList.add('active');
+            if(window.innerWidth>900){
+              var top=a.offsetTop, h=toc.clientHeight;
+              if(top<toc.scrollTop+60 || top>toc.scrollTop+h-60) toc.scrollTop=top-h/3;
+            }}
+        }
+      });
+    },{rootMargin:'0px 0px -75% 0px'});
+    heads.forEach(function(h){io.observe(h)});
+  }
+})();
+</script>
+</body>
+</html>
